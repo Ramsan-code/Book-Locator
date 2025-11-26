@@ -1,5 +1,6 @@
 "use client"
 
+
 import * as React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
@@ -23,30 +24,24 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroupTextarea,
-} from "@/components/ui/input-group"
+
 
 const formSchema = z.object({
-  title: z
+  email: z
     .string()
-    .min(5, "Bug title must be at least 5 characters.")
-    .max(32, "Bug title must be at most 32 characters."),
-  description: z
+    .min(5, "email is required"),
+  password: z
     .string()
-    .min(20, "Description must be at least 20 characters.")
-    .max(100, "Description must be at most 100 characters."),
+    .min(6, "password must be at least 06 characters.")
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}/,"password must contain uppercase,lowercase,number and special character"),
 })
 
 export function BugReportForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      description: "",
+      email: "",
+      password: "",
     },
   })
 
@@ -70,27 +65,27 @@ export function BugReportForm() {
   return (
     <Card className="w-full sm:max-w-md">
       <CardHeader>
-        <CardTitle>Bug Report</CardTitle>
+        <CardTitle>Login</CardTitle>
         <CardDescription>
-          Help us improve by reporting bugs you encounter.
+          please login.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
           <FieldGroup>
             <Controller
-              name="title"
+              name="email"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="form-rhf-demo-title">
-                    Bug Title
+                    user email
                   </FieldLabel>
                   <Input
                     {...field}
                     id="form-rhf-demo-title"
                     aria-invalid={fieldState.invalid}
-                    placeholder="Login button not working on mobile"
+                    placeholder="Enter your email"
                     autoComplete="off"
                   />
                   {fieldState.invalid && (
@@ -99,52 +94,53 @@ export function BugReportForm() {
                 </Field>
               )}
             />
+            
+          </FieldGroup>
+          <FieldGroup>
             <Controller
-              name="description"
+              name="password"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="form-rhf-demo-description">
-                    Description
+                  <FieldLabel htmlFor="form-rhf-demo-title">
+                    password
                   </FieldLabel>
-                  <InputGroup>
-                    <InputGroupTextarea
-                      {...field}
-                      id="form-rhf-demo-description"
-                      placeholder="I'm having an issue with the login button on mobile."
-                      rows={6}
-                      className="min-h-24 resize-none"
-                      aria-invalid={fieldState.invalid}
-                    />
-                    <InputGroupAddon align="block-end">
-                      <InputGroupText className="tabular-nums">
-                        {field.value.length}/100 characters
-                      </InputGroupText>
-                    </InputGroupAddon>
-                  </InputGroup>
-                  <FieldDescription>
-                    Include steps to reproduce, expected behavior, and what
-                    actually happened.
-                  </FieldDescription>
+                  <Input
+                    {...field}
+                    id="form-rhf-demo-title"
+                    aria-invalid={fieldState.invalid}
+                    placeholder="Enter your password"
+                    autoComplete="off"
+                  />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
                 </Field>
               )}
             />
+            
           </FieldGroup>
         </form>
       </CardContent>
       <CardFooter>
         <Field orientation="horizontal">
           <Button type="button" variant="outline" onClick={() => form.reset()}>
-            Reset
+            cancel
           </Button>
           <Button type="submit" form="form-rhf-demo">
-            Submit
+            Login
           </Button>
         </Field>
       </CardFooter>
     </Card>
+  )
+}
+export default function LoginPage(){
+  return(
+    <> 
+    <BugReportForm/>
+    </>
+     
+      
   )
 }
