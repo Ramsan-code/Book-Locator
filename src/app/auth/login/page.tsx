@@ -1,13 +1,9 @@
-"use client"
+"use client";
 
+import * as React from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-import * as React from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Controller, useForm } from "react-hook-form"
-import { toast } from "sonner"
-import * as z from "zod"
-
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -15,132 +11,33 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/card";
+import { LoginForm } from "@/components/auth/LoginForm";
 
-
-const formSchema = z.object({
-  email: z
-    .string()
-    .min(5, "email is required"),
-  password: z
-    .string()
-    .min(6, "password must be at least 06 characters.")
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}/,"password must contain uppercase,lowercase,number and special character"),
-})
-
-export function BugReportForm() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  })
-
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    toast("You submitted the following values:", {
-      description: (
-        <pre className="bg-code text-code-foreground mt-2 w-[320px] overflow-x-auto rounded-md p-4">
-          <code>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-      position: "bottom-right",
-      classNames: {
-        content: "flex flex-col gap-2",
-      },
-      style: {
-        "--border-radius": "calc(var(--radius)  + 4px)",
-      } as React.CSSProperties,
-    })
-  }
+export default function LoginPage() {
+  const router = useRouter();
 
   return (
-    <Card className="w-full sm:max-w-md">
-      <CardHeader>
-        <CardTitle>Login</CardTitle>
-        <CardDescription>
-          please login.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
-          <FieldGroup>
-            <Controller
-              name="email"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="form-rhf-demo-title">
-                    user email
-                  </FieldLabel>
-                  <Input
-                    {...field}
-                    id="form-rhf-demo-title"
-                    aria-invalid={fieldState.invalid}
-                    placeholder="Enter your email"
-                    autoComplete="off"
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-            
-          </FieldGroup>
-          <FieldGroup>
-            <Controller
-              name="password"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="form-rhf-demo-title">
-                    password
-                  </FieldLabel>
-                  <Input
-                    {...field}
-                    id="form-rhf-demo-title"
-                    aria-invalid={fieldState.invalid}
-                    placeholder="Enter your password"
-                    autoComplete="off"
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-            
-          </FieldGroup>
-        </form>
-      </CardContent>
-      <CardFooter>
-        <Field orientation="horizontal">
-          <Button type="button" variant="outline" onClick={() => form.reset()}>
-            cancel
-          </Button>
-          <Button type="submit" form="form-rhf-demo">
-            Login
-          </Button>
-        </Field>
-      </CardFooter>
-    </Card>
-  )
-}
-export default function LoginPage(){
-  return(
-    <> 
-    <BugReportForm/>
-    </>
-     
-      
-  )
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50/50">
+      <Card className="w-full sm:max-w-md">
+        <CardHeader>
+          <CardTitle>Welcome Back</CardTitle>
+          <CardDescription>
+            Enter your credentials to access your account
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <LoginForm onSuccess={() => router.push('/')} />
+        </CardContent>
+        <CardFooter className="flex flex-col gap-4">
+          <div className="text-center text-sm text-gray-500">
+            Don&apos;t have an account?{" "}
+            <Link href="/auth/register" className="text-primary font-medium hover:underline">
+              Sign up
+            </Link>
+          </div>
+        </CardFooter>
+      </Card>
+    </div>
+  );
 }
