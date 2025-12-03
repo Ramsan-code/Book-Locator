@@ -13,15 +13,16 @@ import { LoginForm } from "./LoginForm";
 
 interface LoginModalProps {
   children: React.ReactNode;
+  id?: string;
 }
 
-export function LoginModal({ children }: LoginModalProps) {
+export function LoginModal({ children, id }: LoginModalProps) {
   const [open, setOpen] = React.useState(false);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent id={id} className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Sign In</DialogTitle>
           <DialogDescription>
