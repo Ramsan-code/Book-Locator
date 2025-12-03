@@ -2,13 +2,13 @@
 
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { Navbar } from "@/components/layout/Navbar";
-import { Book, Heart, Home, User } from "lucide-react";
+import { Book, ShoppingBag, User, PlusCircle } from "lucide-react";
 
 const sidebarItems = [
-  { url: "/reader", title: "Dashboard", icon: Home },
-  { url: "/reader/books", title: "My Books", icon: Book },
-  { url: "/reader/wishlist", title: "Wishlist", icon: Heart },
-  { url: "/reader/profile", title: "Profile", icon: User },
+  { url: "/my-books", title: "My Books", icon: Book },
+  { url: "/list-book", title: "List Book", icon: PlusCircle },
+  { url: "/my-transactions", title: "Requests", icon: ShoppingBag },
+  { url: "/profile", title: "Profile", icon: User },
 ];
 
 export default function ReaderLayout({
