@@ -21,7 +21,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { authApi } from "@/lib/api";
+import { useAuth } from "@/contexts/AuthContext";
 import { getCurrentLocation } from "@/lib/location";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -30,12 +30,14 @@ const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
+  phone_no: z.string().min(10, "Phone number must be at least 10 digits").optional().or(z.literal("")),
+  address: z.string().optional(),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
 });
 
 export default function RegisterPage() {
-  const router = useRouter();
+  const { register: registerUser } = useAuth();
   const [isLoading, setIsLoading] = React.useState(false);
   const [isGettingLocation, setIsGettingLocation] = React.useState(false);
 
@@ -45,6 +47,8 @@ export default function RegisterPage() {
       name: "",
       email: "",
       password: "",
+      phone_no: "",
+      address: "",
       latitude: undefined,
       longitude: undefined,
     },
@@ -67,34 +71,18 @@ export default function RegisterPage() {
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
-      const payload: any = {
+      await registerUser({
         name: data.name,
         email: data.email,
         password: data.password,
-        role: "user", // Default role as per API
-      };
-
-      // Add location if captured
-      if (data.latitude && data.longitude) {
-        payload.location = {
-          type: "Point",
-          coordinates: [data.longitude, data.latitude],
-        };
-      }
-
-      await authApi.register(payload);
-      
-      toast.success(
-        "Registration successful! Please wait for admin approval before logging in.",
-        { duration: 5000 }
-      );
-      
-      // Redirect to login after 2 seconds
-      setTimeout(() => {
-        router.push("/auth/login");
-      }, 2000);
+        phone_no: data.phone_no,
+        address: data.address,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        role: "user",
+      });
     } catch (error: any) {
-      toast.error(error.message || "Failed to register");
+      // Error handled in AuthContext
     } finally {
       setIsLoading(false);
     }
@@ -108,7 +96,7 @@ export default function RegisterPage() {
             Create an Account
           </CardTitle>
           <CardDescription className="text-center">
-            Register to start buying and selling books in your community
+            Register to start reading and sharing books
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -147,6 +135,29 @@ export default function RegisterPage() {
               </Field>
 
               <Field>
+                <FieldLabel>Phone Number (Optional)</FieldLabel>
+                <Input
+                  {...form.register("phone_no")}
+                  type="tel"
+                  placeholder="+94 77 123 4567"
+                />
+                {form.formState.errors.phone_no && (
+                  <FieldError errors={[form.formState.errors.phone_no]} />
+                )}
+              </Field>
+
+              <Field>
+                <FieldLabel>Address (Optional)</FieldLabel>
+                <Input
+                  {...form.register("address")}
+                  placeholder="City, Country"
+                />
+                {form.formState.errors.address && (
+                  <FieldError errors={[form.formState.errors.address]} />
+                )}
+              </Field>
+
+              <Field>
                 <FieldLabel>Location (Optional)</FieldLabel>
                 <div className="flex gap-2">
                   <Button
@@ -166,12 +177,11 @@ export default function RegisterPage() {
                 </div>
                 {form.watch("latitude") && form.watch("longitude") && (
                   <p className="text-xs text-muted-foreground mt-1">
-                    Location captured: {form.watch("latitude")?.toFixed(4)},{" "}
-                    {form.watch("longitude")?.toFixed(4)}
+                    Location captured
                   </p>
                 )}
                 <p className="text-xs text-muted-foreground mt-1">
-                  Location helps show you books nearby
+                  Helps find books nearby. Your exact location is never shown.
                 </p>
               </Field>
             </FieldGroup>
@@ -184,8 +194,7 @@ export default function RegisterPage() {
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
               <p className="font-medium">⏳ Approval Required</p>
               <p className="text-xs mt-1">
-                Your account will be reviewed by an admin before you can list or buy books.
-                You'll receive an email once approved.
+                Your account will be reviewed by an admin before you can login.
               </p>
             </div>
 

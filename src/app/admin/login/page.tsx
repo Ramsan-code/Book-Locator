@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { LogIn, Mail, Lock, ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -36,6 +36,7 @@ const formSchema = z.object({
 
 export default function AdminLoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -49,11 +50,20 @@ export default function AdminLoginPage() {
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      // TODO: Implement actual admin authentication
-      toast.success("Admin login successful");
-      router.push("/admin");
-    } catch (error) {
-      toast.error("Invalid admin credentials");
+      // Use AuthContext login which handles everything properly
+      await login(data);
+      
+      // Note: The login function in AuthContext will:
+      // 1. Call the API
+      // 2. Check the user role
+      // 3. Redirect to /admin if role is admin
+      // 4. Save token and user properly
+    } catch (error: any) {
+      // Check if it's an access denied error (non-admin trying to login)
+      if (error.message?.includes('admin')) {
+        toast.error('Access denied. Admin credentials required.');
+      }
+      // Other errors are already handled by AuthContext
     } finally {
       setIsSubmitting(false);
     }
@@ -146,12 +156,6 @@ export default function AdminLoginPage() {
               </span>
             )}
           </Button>
-          <div className="text-center text-sm text-gray-500">
-            Don&apos;t have an account?{" "}
-            <Link href="/auth/register" className="text-gray-900 font-semibold hover:underline">
-              Create one now
-            </Link>
-          </div>
         </CardFooter>
       </Card>
     </div>
