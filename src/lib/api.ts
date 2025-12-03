@@ -292,6 +292,25 @@ export const booksApi = {
       headers: { Authorization: `Bearer ${token}` },
     });
   },
+
+  async uploadImage(token: string, file: File) {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const response = await fetch(`${API_BASE_URL}/api/upload`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to upload image");
+    }
+
+    return response.json();
+  },
 };
 
 // ----------------------

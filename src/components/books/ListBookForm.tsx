@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { MapPin, ChevronRight, ChevronLeft, Check, Link2 } from "lucide-react";
+import { MapPin, ChevronRight, ChevronLeft, Check, Link2, Upload, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -49,7 +49,12 @@ export function ListBookForm() {
     address: "",
     latitude: "",
     longitude: "",
+    image: "",
   });
+
+  const [imageFile, setImageFile] = React.useState<File | null>(null);
+  const [imagePreview, setImagePreview] = React.useState<string | null>(null);
+  const [isUploading, setIsUploading] = React.useState(false);
 
   const [errors, setErrors] = React.useState<Record<string, string>>({});
 
@@ -135,6 +140,67 @@ export function ListBookForm() {
     );
   };
 
+  // Handle image upload
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    // Validate file size (e.g., 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File size should be less than 5MB");
+      return;
+    }
+
+    setImageFile(file);
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // Upload to server
+    setIsUploading(true);
+    try {
+      if (!token) {
+        toast.error("Please login to upload images");
+        return;
+      }
+      
+      const response = await booksApi.uploadImage(token, file);
+      if (response && response.image) {
+        // Prepend API URL if path is relative
+        const imageUrl = response.image.startsWith("http") 
+          ? response.image 
+          : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}${response.image}`;
+          
+        setFormData(prev => ({ ...prev, image: imageUrl }));
+        toast.success("Image uploaded successfully");
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Failed to upload image");
+      // Clear preview on error
+      setImageFile(null);
+      setImagePreview(null);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    setFormData(prev => ({ ...prev, image: "" }));
+  };
+
   // Validate step
   const validateStep = (step: number): boolean => {
     const newErrors: Record<string, string> = {};
@@ -213,6 +279,7 @@ export function ListBookForm() {
           coordinates: [parseFloat(formData.longitude), parseFloat(formData.latitude)],
         },
         owner: user._id,
+        image: formData.image,
       };
 
       console.log("Book data prepared:", bookData);
@@ -387,6 +454,59 @@ export function ListBookForm() {
                       onChange={(e) => handleChange("description", e.target.value)}
                       rows={4}
                     />
+                  </div>
+
+                  {/* Image Upload */}
+                  <div>
+                    <Label>Book Cover Image</Label>
+                    <div className="mt-2">
+                      {imagePreview ? (
+                        <div className="relative w-full max-w-[200px] aspect-[2/3] rounded-lg overflow-hidden border bg-muted group">
+                          <img 
+                            src={imagePreview} 
+                            alt="Book cover preview" 
+                            className="w-full h-full object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={removeImage}
+                            className="absolute top-2 right-2 p-1 bg-black/50 hover:bg-black/70 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                          {isUploading && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                              <Loader2 className="h-8 w-8 text-white animate-spin" />
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center w-full">
+                          <label
+                            htmlFor="image-upload"
+                            className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted transition-colors border-muted-foreground/25 hover:border-muted-foreground/50"
+                          >
+                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                              <Upload className="w-10 h-10 mb-3 text-muted-foreground" />
+                              <p className="mb-2 text-sm text-muted-foreground">
+                                <span className="font-semibold">Click to upload</span> or drag and drop
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                SVG, PNG, JPG or GIF (MAX. 5MB)
+                              </p>
+                            </div>
+                            <input 
+                              id="image-upload" 
+                              type="file" 
+                              className="hidden" 
+                              accept="image/*"
+                              onChange={handleImageUpload}
+                              disabled={isUploading}
+                            />
+                          </label>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
