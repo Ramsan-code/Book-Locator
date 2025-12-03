@@ -29,11 +29,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { adminApi, ApiError } from "@/lib/api";
+import { adminApi } from "@/lib/api";
+import { useAuth } from "@/contexts/AuthContext";
 
-// Mock data type until API is fully ready
 interface PendingUser {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   role: string;
@@ -41,6 +41,7 @@ interface PendingUser {
 }
 
 export default function AdminApprovalsPage() {
+  const { token } = useAuth();
   const [pendingUsers, setPendingUsers] = React.useState<PendingUser[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [actionLoading, setActionLoading] = React.useState<string | null>(null);
@@ -48,18 +49,10 @@ export default function AdminApprovalsPage() {
   // Fetch pending users
   React.useEffect(() => {
     const fetchPending = async () => {
+      if (!token) return;
       try {
-        // In a real scenario, we'd call adminApi.getPendingReaders()
-        // For now, we'll mock it or use existing seller/deliverer endpoints if they were generic
-        // Since I don't have getPendingReaders in api.ts, I'll simulate it or add it.
-        // I will simulate for now as the backend is missing.
-        
-        // Simulation:
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setPendingUsers([
-          { id: "1", name: "Alice Reader", email: "alice@example.com", role: "reader", createdAt: "2023-10-27" },
-          { id: "2", name: "Bob Bookworm", email: "bob@example.com", role: "reader", createdAt: "2023-10-28" },
-        ]);
+        const res = await adminApi.getPendingReaders(token);
+        setPendingUsers(res.data || []);
         setIsLoading(false);
       } catch (error) {
         toast.error("Failed to load pending approvals");
@@ -68,14 +61,14 @@ export default function AdminApprovalsPage() {
     };
 
     fetchPending();
-  }, []);
+  }, [token]);
 
   const handleApprove = async (id: string) => {
+    if (!token) return;
     setActionLoading(id);
     try {
-      // await adminApi.approveUser(token, id); // Need to implement this in api.ts
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Mock
-      setPendingUsers(prev => prev.filter(u => u.id !== id));
+      await adminApi.approveReader(token, id);
+      setPendingUsers(prev => prev.filter(u => u._id !== id));
       toast.success("User approved successfully");
     } catch (error) {
       toast.error("Failed to approve user");
@@ -85,11 +78,11 @@ export default function AdminApprovalsPage() {
   };
 
   const handleReject = async (id: string) => {
+    if (!token) return;
     setActionLoading(id);
     try {
-      // await adminApi.rejectUser(token, id);
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Mock
-      setPendingUsers(prev => prev.filter(u => u.id !== id));
+      await adminApi.rejectReader(token, id);
+      setPendingUsers(prev => prev.filter(u => u._id !== id));
       toast.success("User rejected");
     } catch (error) {
       toast.error("Failed to reject user");
@@ -109,9 +102,9 @@ export default function AdminApprovalsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Seller Approvals</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Reader Approvals</h1>
         <p className="text-muted-foreground">
-          Review and approve new seller registrations.
+          Review and approve new reader registrations.
         </p>
       </div>
 
@@ -140,11 +133,11 @@ export default function AdminApprovalsPage() {
               </TableHeader>
               <TableBody>
                 {pendingUsers.map((user) => (
-                  <TableRow key={user.id}>
+                  <TableRow key={user._id}>
                     <TableCell className="font-medium">{user.name}</TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell className="capitalize">{user.role}</TableCell>
-                    <TableCell>{user.createdAt}</TableCell>
+                    <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Dialog>
@@ -161,8 +154,8 @@ export default function AdminApprovalsPage() {
                               </DialogDescription>
                             </DialogHeader>
                             <DialogFooter>
-                              <Button variant="destructive" onClick={() => handleReject(user.id)} disabled={actionLoading === user.id}>
-                                {actionLoading === user.id ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirm Reject"}
+                              <Button variant="destructive" onClick={() => handleReject(user._id)} disabled={actionLoading === user._id}>
+                                {actionLoading === user._id ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirm Reject"}
                               </Button>
                             </DialogFooter>
                           </DialogContent>
@@ -182,8 +175,8 @@ export default function AdminApprovalsPage() {
                               </DialogDescription>
                             </DialogHeader>
                             <DialogFooter>
-                              <Button onClick={() => handleApprove(user.id)} disabled={actionLoading === user.id}>
-                                {actionLoading === user.id ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirm Approve"}
+                              <Button onClick={() => handleApprove(user._id)} disabled={actionLoading === user._id}>
+                                {actionLoading === user._id ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirm Approve"}
                               </Button>
                             </DialogFooter>
                           </DialogContent>

@@ -29,7 +29,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { booksApi } from "@/lib/api";
+
+import { adminApi } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function AdminBooksPage() {
@@ -43,21 +44,11 @@ export default function AdminBooksPage() {
       if (!token) return;
       try {
         setIsLoading(true);
-        // Assuming API supports filtering by status
-        const res = await booksApi.getAll("status=pending").catch(() => ({ success: false, books: [] }));
-        
-        if (res.success && res.books.length > 0) {
-          setPendingBooks(res.books);
-        } else {
-           // Fallback Mock Data
-           setPendingBooks([
-             { _id: "1", title: "Pending Novel", author: "New Author", price: 200, category: "Fiction", status: "pending", createdAt: "2023-11-26", owner: { name: "John Doe" } },
-             { _id: "2", title: "Science Textbook", author: "Prof. X", price: 800, category: "Education", status: "pending", createdAt: "2023-11-27", owner: { name: "Jane Smith" } },
-           ]);
-        }
+        const response = await adminApi.getPendingBooks(token);
+        setPendingBooks(response.data || []);
+        setIsLoading(false);
       } catch (error) {
         toast.error("Failed to load pending books");
-      } finally {
         setIsLoading(false);
       }
     };
@@ -69,7 +60,7 @@ export default function AdminBooksPage() {
     if (!token) return;
     setActionLoading(id);
     try {
-      await booksApi.update(token, id, { status: 'approved' });
+      await adminApi.approveBook(token, id);
       setPendingBooks(prev => prev.filter(b => b._id !== id));
       toast.success("Book approved successfully");
     } catch (error) {
@@ -83,7 +74,7 @@ export default function AdminBooksPage() {
     if (!token) return;
     setActionLoading(id);
     try {
-      await booksApi.update(token, id, { status: 'rejected' });
+      await adminApi.rejectBook(token, id, "Does not meet quality standards");
       setPendingBooks(prev => prev.filter(b => b._id !== id));
       toast.success("Book rejected");
     } catch (error) {

@@ -3,9 +3,69 @@
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, CheckCircle, Settings, UserCheck } from "lucide-react";
+import { Users, CheckCircle, Settings, UserCheck, DollarSign, Mail, Loader2 } from "lucide-react";
+import { adminApi } from "@/lib/api";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import React from "react";
 
 export default function AdminDashboard() {
+  const { token } = useAuth();
+  const [pendingCommissions, setPendingCommissions] = React.useState<any[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [sharingLoading, setSharingLoading] = React.useState<string | null>(null);
+  const [commissionRate, setCommissionRate] = React.useState(0.08); // Default fallback
+
+  const fetchSettings = React.useCallback(async () => {
+    if (!token) return;
+    try {
+      const res = await adminApi.getSettings(token);
+      if (res.success) {
+        const commissionSetting = res.data.find((s: any) => s.key === "commission_rate");
+        if (commissionSetting) {
+          setCommissionRate(commissionSetting.value);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch settings", error);
+      // Use default 0.08 if fetch fails
+    }
+  }, [token]);
+
+  const fetchCommissions = React.useCallback(async () => {
+    if (!token) return;
+    try {
+      const res = await adminApi.getPendingCommissions(token);
+      if (res.success) {
+        setPendingCommissions(res.transactions);
+      }
+    } catch (error) {
+      console.error("Failed to fetch commissions", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [token]);
+
+  React.useEffect(() => {
+    fetchSettings();
+    fetchCommissions();
+  }, [fetchSettings, fetchCommissions]);
+
+  const handleShareContact = async (transactionId: string) => {
+    if (!token) return;
+    setSharingLoading(transactionId);
+    try {
+      await adminApi.shareContactInfo(token, transactionId);
+      toast.success("Contact info shared successfully!");
+      fetchCommissions(); // Refresh list
+    } catch (error) {
+      toast.error("Failed to share contact info");
+    } finally {
+      setSharingLoading(null);
+    }
+  };
+
   const stats = [
     {
       title: "Total Users",
@@ -19,21 +79,14 @@ export default function AdminDashboard() {
       value: "0",
       description: "Users waiting for approval",
       icon: CheckCircle,
-      href: "/admin/apporovals",
+      href: "/admin/approvals",
     },
     {
-      title: "Active Sellers",
-      value: "0",
-      description: "Approved sellers",
-      icon: UserCheck,
-      href: "/admin/users",
-    },
-    {
-      title: "Active Deliverers",
-      value: "0",
-      description: "Approved deliverers",
-      icon: UserCheck,
-      href: "/admin/users",
+      title: "Pending Commissions",
+      value: pendingCommissions.length.toString(),
+      description: "Transactions waiting for payment",
+      icon: DollarSign,
+      href: "#commissions",
     },
   ];
 
@@ -96,11 +149,11 @@ export default function AdminDashboard() {
             <CardHeader>
               <CardTitle>Pending Approvals</CardTitle>
               <CardDescription>
-                Review and approve seller/deliverer registrations
+                Review and approve reader registrations
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Link href="/admin/apporovals">
+              <Link href="/admin/approvals">
                 <Button className="w-full">
                   <CheckCircle className="mr-2 h-4 w-4" />
                   View Approvals
@@ -123,6 +176,108 @@ export default function AdminDashboard() {
                   Settings
                 </Button>
               </Link>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Pending Commissions Section */}
+        <div id="commissions" className="mt-12">
+          <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2">
+            <DollarSign className="h-6 w-6 text-emerald-600" />
+            Pending Commissions & Contact Sharing
+          </h2>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Transactions Waiting for Commission</CardTitle>
+              <CardDescription>
+                Monitor payments and share contact information when both parties have paid.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div className="text-center py-8">Loading...</div>
+              ) : pendingCommissions.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">No pending commissions found.</div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm text-left">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3">Book</th>
+                        <th className="px-6 py-3">Buyer Status</th>
+                        <th className="px-6 py-3">Seller Status</th>
+                        <th className="px-6 py-3">Total Commission</th>
+                        <th className="px-6 py-3">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {pendingCommissions.map((tx) => {
+                        const bothPaid = tx.buyerCommissionPaid && tx.sellerCommissionPaid;
+                        const commissionAmount = tx.commissionAmount || (tx.price * commissionRate);
+                        
+                        return (
+                          <tr key={tx._id} className="bg-white border-b hover:bg-gray-50">
+                            <td className="px-6 py-4 font-medium text-gray-900">
+                              {tx.book?.title}
+                              <div className="text-xs text-muted-foreground">Price: ₹{tx.price}</div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="flex flex-col gap-1">
+                                <span className="font-medium">{tx.buyer?.name}</span>
+                                {tx.buyerCommissionPaid ? (
+                                  <Badge className="bg-emerald-500 w-fit">Paid</Badge>
+                                ) : (
+                                  <Badge variant="outline" className="text-amber-600 border-amber-200 w-fit">Pending</Badge>
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="flex flex-col gap-1">
+                                <span className="font-medium">{tx.seller?.name}</span>
+                                {tx.sellerCommissionPaid ? (
+                                  <Badge className="bg-emerald-500 w-fit">Paid</Badge>
+                                ) : (
+                                  <Badge variant="outline" className="text-amber-600 border-amber-200 w-fit">Pending</Badge>
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="font-bold text-emerald-600">
+                                ₹{(commissionAmount * 2).toFixed(2)}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                (₹{commissionAmount.toFixed(2)} × 2)
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              {tx.status === 'commission_paid' || bothPaid ? (
+                                <Button 
+                                  size="sm" 
+                                  className="bg-blue-600 hover:bg-blue-700"
+                                  onClick={() => handleShareContact(tx._id)}
+                                  disabled={sharingLoading === tx._id}
+                                >
+                                  {sharingLoading === tx._id ? (
+                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                  ) : (
+                                    <Mail className="h-4 w-4 mr-2" />
+                                  )}
+                                  Share Contact Info
+                                </Button>
+                              ) : (
+                                <Button size="sm" variant="secondary" disabled>
+                                  Waiting for Payments
+                                </Button>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
