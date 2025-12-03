@@ -36,7 +36,7 @@ const CATEGORIES = [
   "Other"
 ];
 
-export default function BooksPage() {
+function BooksContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth(); // Get logged-in user
@@ -477,5 +477,17 @@ export default function BooksPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function BooksPage() {
+  return (
+    <React.Suspense fallback={
+      <div className="flex justify-center items-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    }>
+      <BooksContent />
+    </React.Suspense>
   );
 }

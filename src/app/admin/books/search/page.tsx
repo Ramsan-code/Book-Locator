@@ -36,7 +36,7 @@ const CATEGORIES = [
   "Other"
 ];
 
-export default function AdminBookSearchPage() {
+function AdminBookSearchContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth(); // Get logged-in admin user
@@ -468,5 +468,17 @@ export default function AdminBookSearchPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AdminBookSearchPage() {
+  return (
+    <React.Suspense fallback={
+      <div className="flex justify-center items-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    }>
+      <AdminBookSearchContent />
+    </React.Suspense>
   );
 }
