@@ -5,8 +5,14 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { BookOpen } from "lucide-react";
-import { Settings } from "lucide-react"; // Added import for Settings icon
+import { BookOpen, ShoppingBag, User, PlusCircle, Settings } from "lucide-react";
+
+const sidebarItems = [
+  { url: "/my-books", title: "My Books", icon: BookOpen },
+  { url: "/list-book", title: "List Book", icon: PlusCircle },
+  { url: "/my-transactions", title: "Requests", icon: ShoppingBag },
+  { url: "/profile", title: "Profile", icon: User },
+];
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
   items: {
@@ -17,7 +23,7 @@ interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
   title?: string;
 }
 
-export function AppSidebar({ className, items, title = "Menu", ...props }: SidebarProps) {
+export function AppSidebar({ className, items = sidebarItems, title = "Menu", ...props }: SidebarProps) {
   const pathname = usePathname();
 
   return (
