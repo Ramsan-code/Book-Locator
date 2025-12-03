@@ -20,19 +20,32 @@ const USER_KEY = "booklink_user";
 // ----------------------
 // Helpers
 // ----------------------
+const setCookie = (name: string, value: string, days: number) => {
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+}
+
+const deleteCookie = (name: string) => {
+  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
+}
+
 const saveAuth = (token: string, user: User) => {
   localStorage.setItem(TOKEN_KEY, token);
   localStorage.setItem(USER_KEY, JSON.stringify(user));
+  setCookie('token', token, 7);
+  setCookie('user', JSON.stringify(user), 7);
 };
 
 const clearAuth = () => {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
+  deleteCookie('token');
+  deleteCookie('user');
 };
 
 const getRoleRedirect = (role: UserRole): string => {
   const redirectMap: Record<UserRole, string> = {
-    seller: "/my-books",
+    user: "/books",
     admin: "/admin",
   };
   return redirectMap[role] || "/books";
@@ -119,13 +132,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const res = await authApi.register(data);
 
         // Roles requiring approval
-        if (["seller", "deliverer"].includes(data.role)) {
+        if (["user"].includes(data.role)) {
           toast.success(res.message || "Registration successful! Awaiting approval.");
           router.push("/auth/login");
           return;
         }
 
-        // Auto-login for customers
+        // Auto-login for others (if any)
         if (res.token) {
           setToken(res.token);
           setUser(res.user);
