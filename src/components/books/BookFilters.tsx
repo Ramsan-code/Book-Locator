@@ -180,6 +180,7 @@ export function BookFilters({ filters, onFiltersChange, onClearFilters }: BookFi
           </div>
           <div className="flex gap-2">
             <Button
+              type="button"
               size="sm"
               onClick={applyPriceFilter}
               className="flex-1"
@@ -189,6 +190,7 @@ export function BookFilters({ filters, onFiltersChange, onClearFilters }: BookFi
             </Button>
             {(filters.minPrice !== undefined || filters.maxPrice !== undefined) && (
               <Button
+                type="button"
                 size="sm"
                 variant="outline"
                 onClick={clearPriceFilter}
@@ -205,6 +207,7 @@ export function BookFilters({ filters, onFiltersChange, onClearFilters }: BookFi
         <>
           <Separator />
           <Button
+            type="button"
             variant="outline"
             onClick={onClearFilters}
             className="w-full"

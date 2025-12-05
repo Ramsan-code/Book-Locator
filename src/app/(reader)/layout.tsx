@@ -2,10 +2,11 @@
 
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { Navbar } from "@/components/layout/Navbar";
-import { Book, ShoppingBag, User, PlusCircle } from "lucide-react";
+import { Book, ShoppingBag, User, PlusCircle, Heart } from "lucide-react";
 
 const sidebarItems = [
   { url: "/my-books", title: "My Books", icon: Book },
+  { url: "/favorites", title: "My Favorites", icon: Heart },
   { url: "/list-book", title: "List Book", icon: PlusCircle },
   { url: "/my-transactions", title: "Requests", icon: ShoppingBag },
   { url: "/profile", title: "Profile", icon: User },

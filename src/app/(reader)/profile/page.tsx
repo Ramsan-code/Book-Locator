@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
-import { Loader2, Camera, Star } from "lucide-react";
+import { Loader2, Camera, Star, Pencil, Trash2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,15 +18,23 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
-import { reviewsApi } from "@/lib/api";
+import { reviewsApi, profileApi, booksApi } from "@/lib/api";
 
 export default function ProfilePage() {
-  const { user, logout, isLoading: authLoading } = useAuth();
+  const { user, logout, isLoading: authLoading, checkAuth } = useAuth();
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState(false);
+  const [isUploading, setIsUploading] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const [stats, setStats] = React.useState({ averageRating: 4.5, reviewCount: 28 });
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Form state
   const [displayName, setDisplayName] = React.useState("");
@@ -35,6 +43,7 @@ export default function ProfilePage() {
   const [bio, setBio] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [phone, setPhone] = React.useState("");
+  const [image, setImage] = React.useState("");
 
   // Rating breakdown (mock data)
   const ratingBreakdown = [
@@ -53,6 +62,7 @@ export default function ProfilePage() {
       setLocation(user.address || user.city || "");
       setEmail(user.email || "");
       setPhone(user.phone_no || "");
+      setImage(user.image || "");
       
       // Fetch user's review stats
       const fetchStats = async () => {
@@ -72,13 +82,59 @@ export default function ProfilePage() {
     }
   }, [user]);
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    setIsUploading(true);
+    try {
+      // Use booksApi.uploadImage as a generic upload handler since it hits /api/upload
+      const res = await booksApi.uploadImage(localStorage.getItem("token") || "", file);
+      if (res.image) {
+        setImage(res.image);
+        toast.success("Image uploaded successfully");
+      }
+    } catch (error) {
+      console.error("Upload failed:", error);
+      toast.error("Failed to upload image");
+    } finally {
+      setIsUploading(false);
+      // Reset input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImage("");
+    toast.success("Image removed. Click Save Changes to apply.");
+  };
+
   const handleSaveChanges = async () => {
     setIsLoading(true);
     try {
-      // TODO: Implement API call to update profile
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-      toast.success("Profile updated successfully!");
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const updateData = {
+        name: displayName,
+        location: location,
+        email: email,
+        image: image, // Send the image URL
+      };
+
+      const res = await profileApi.updateProfile(token, updateData);
+      
+      if (res.success) {
+        toast.success("Profile updated successfully!");
+        // Refresh auth context to update user data across the app
+        await checkAuth();
+      } else {
+        toast.error("Failed to update profile");
+      }
     } catch (error) {
+      console.error("Update failed:", error);
       toast.error("Failed to update profile");
     } finally {
       setIsLoading(false);
@@ -136,7 +192,7 @@ export default function ProfilePage() {
             {/* Avatar Section */}
             <div className="flex items-center gap-6">
               <Avatar className="h-24 w-24">
-                <AvatarImage src={undefined} alt={displayName} />
+                <AvatarImage src={image} alt={displayName} />
                 <AvatarFallback className="text-2xl">
                   {displayName.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)}
                 </AvatarFallback>
@@ -146,10 +202,53 @@ export default function ProfilePage() {
                 <p className="text-sm text-muted-foreground mb-3">
                   Upload a profile picture to personalize your account.
                 </p>
-                <Button variant="outline" size="sm">
-                  <Camera className="mr-2 h-4 w-4" />
-                  Upload Photo
-                </Button>
+                
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                />
+
+                {image ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" disabled={isUploading}>
+                        {isUploading ? (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                          <Pencil className="mr-2 h-4 w-4" />
+                        )}
+                        Edit Photo
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start">
+                      <DropdownMenuItem onClick={() => fileInputRef.current?.click()}>
+                        <Upload className="mr-2 h-4 w-4" />
+                        Change Photo
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={handleRemoveImage} className="text-destructive focus:text-destructive">
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Remove Photo
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                  >
+                    {isUploading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Camera className="mr-2 h-4 w-4" />
+                    )}
+                    Upload Photo
+                  </Button>
+                )}
               </div>
             </div>
 
