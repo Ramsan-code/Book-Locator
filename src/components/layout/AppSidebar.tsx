@@ -5,10 +5,11 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { BookOpen, ShoppingBag, User, PlusCircle, Settings } from "lucide-react";
+import { BookOpen, ShoppingBag, User, PlusCircle, Settings, Heart } from "lucide-react";
 
 const sidebarItems = [
   { url: "/my-books", title: "My Books", icon: BookOpen },
+  { url: "/favorites", title: "My Favorites", icon: Heart },
   { url: "/list-book", title: "List Book", icon: PlusCircle },
   { url: "/my-transactions", title: "Requests", icon: ShoppingBag },
   { url: "/profile", title: "Profile", icon: User },
