@@ -37,9 +37,11 @@ export default function AdminUsersPage() {
     if (!token) return;
     try {
       setIsLoading(true);
-      // Fetch all users (not just pending)
-      const res = await adminApi.getPendingReaders(token);
-      setUsers(res.data || []);
+      // Fetch all users
+      const res = await adminApi.getAllReaders(token);
+      // Handle both array response (from paginationResponse helper) or direct array
+      const usersData = res.data || [];
+      setUsers(Array.isArray(usersData) ? usersData : []);
     } catch (error) {
       console.error("Failed to load users:", error);
       toast.error("Failed to load users");
@@ -55,8 +57,15 @@ export default function AdminUsersPage() {
   const handleToggleStatus = async (userId: string, currentStatus: boolean) => {
     if (!token) return;
     try {
-      // This would call a toggle active/inactive endpoint
-      toast.info("Toggle status feature coming soon");
+      await adminApi.toggleUserStatus(token, userId);
+      toast.success(`User ${currentStatus ? "deactivated" : "activated"} successfully`);
+      
+      // Update local state
+      setUsers(prev => prev.map(user => 
+        user._id === userId 
+          ? { ...user, isActive: !currentStatus } 
+          : user
+      ));
     } catch (error) {
       toast.error("Failed to update user status");
     }
@@ -225,8 +234,18 @@ export default function AdminUsersPage() {
                       <Button
                         variant="ghost"
                         size="sm"
+                        onClick={() => handleToggleStatus(user._id, user.isActive)}
+                        className={user.isActive ? "text-green-600 hover:text-green-700 hover:bg-green-50" : "text-gray-400 hover:text-gray-500 hover:bg-gray-50"}
+                        title={user.isActive ? "Deactivate User" : "Activate User"}
+                      >
+                        {user.isActive ? <UserCheck className="h-4 w-4" /> : <UserX className="h-4 w-4" />}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => handleDelete(user._id)}
                         className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        title="Delete User"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
