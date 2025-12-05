@@ -18,6 +18,7 @@ export interface User {
   
   // Contact info
   phone_no?: string;
+  image?: string;
 }
 
 export interface AuthResponse {
@@ -52,5 +53,5 @@ export interface AuthContextType {
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
-  refreshUser: () => Promise<void>;
+  checkAuth: () => Promise<void>;
 }

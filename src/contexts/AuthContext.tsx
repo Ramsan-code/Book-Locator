@@ -175,9 +175,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [token, router]);
 
   // -------------------------------------------------
-  // Refresh user
+  // Check Auth (Refresh user)
   // -------------------------------------------------
-  const refreshUser = useCallback(async () => {
+  const checkAuth = useCallback(async () => {
     if (!token) return;
     try {
       const res = await authApi.getMe(token);
@@ -200,7 +200,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     login,
     register,
     logout,
-    refreshUser,
+    checkAuth,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

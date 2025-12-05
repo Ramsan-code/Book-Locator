@@ -87,6 +87,7 @@ export const authApi = {
         email: reader.email,
         role: reader.role,
         isApproved: reader.isApproved,
+        image: reader.image,
       }
     } as AuthResponse;
   },
@@ -111,6 +112,7 @@ export const authApi = {
         email: reader.email,
         role: reader.role,
         isApproved: reader.isApproved,
+        image: reader.image,
       }
     } as AuthResponse;
   },
@@ -135,6 +137,7 @@ export const authApi = {
         address: response.address,
         city: response.city,
         phone_no: response.phone_no,
+        image: response.image,
       }
     } as AuthResponse;
   },
@@ -162,9 +165,16 @@ export const authApi = {
 // ----------------------
 export const adminApi = {
   // Readers
-  getPendingReaders(token: string) {
+    getPendingReaders(token: string) {
     return request<{ success: boolean; data: any[] }>(
       "/api/admin/users/pending",
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  },
+
+  getAllReaders(token: string) {
+    return request<{ success: boolean; data: any[]; total: number; page: number; limit: number }>(
+      "/api/admin/users",
       { headers: { Authorization: `Bearer ${token}` } }
     );
   },
@@ -172,6 +182,13 @@ export const adminApi = {
   approveReader(token: string, id: string) {
     return request<{ success: boolean; message: string }>(
       `/api/admin/users/${id}/approve`,
+      { method: "PUT", headers: { Authorization: `Bearer ${token}` } }
+    );
+  },
+
+  toggleUserStatus(token: string, id: string) {
+    return request<{ success: boolean; message: string; data: any }>(
+      `/api/admin/users/${id}/toggle-status`,
       { method: "PUT", headers: { Authorization: `Bearer ${token}` } }
     );
   },
@@ -245,6 +262,13 @@ export const adminApi = {
         headers: { Authorization: `Bearer ${token}` },
         body: JSON.stringify({ reason }),
       }
+    );
+  },
+
+  getOwnerDetails(token: string, ownerId: string) {
+    return request<{ success: boolean; data: { owner: any; books: any[]; reviews: any[]; stats: any } }>(
+      `/api/admin/books/owner/${ownerId}`,
+      { headers: { Authorization: `Bearer ${token}` } }
     );
   },
 };
