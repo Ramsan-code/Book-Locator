@@ -14,7 +14,7 @@ interface ReviewCardProps {
     _id: string;
     rating: number;
     comment: string;
-    reviewer: {
+    reviewer?: {
       _id: string;
       name: string;
       email: string;
@@ -26,21 +26,23 @@ interface ReviewCardProps {
 }
 
 export function ReviewCard({ review, currentUserId, onDelete }: ReviewCardProps) {
-  const isOwnReview = currentUserId === review.reviewer._id;
+  const reviewerName = review.reviewer?.name || "Anonymous";
+  const reviewerId = review.reviewer?._id || "";
+  const isOwnReview = currentUserId && reviewerId && currentUserId === reviewerId;
 
   return (
     <Card>
       <CardContent className="p-4">
         <div className="flex items-start gap-4">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${review.reviewer.name}`} />
-            <AvatarFallback>{review.reviewer.name.charAt(0).toUpperCase()}</AvatarFallback>
+            <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${reviewerName}`} />
+            <AvatarFallback>{reviewerName.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
           
           <div className="flex-1 space-y-2">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium">{review.reviewer.name}</p>
+                <p className="font-medium">{reviewerName}</p>
                 <div className="flex items-center gap-2 mt-1">
                   <RatingDisplay rating={review.rating} size="sm" />
                   <Badge variant="secondary" className="text-xs">

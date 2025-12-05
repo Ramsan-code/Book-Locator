@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LoginModal } from "@/components/auth/LoginModal";
-import { BookOpen, User, LogOut, LayoutDashboard, ShoppingBag, List, Library, Package } from "lucide-react";
+import { BookOpen, User, LogOut, LayoutDashboard, ShoppingBag, List, Library, Package, Heart } from "lucide-react";
 
 export function Navbar() {
   const { user, logout } = useAuth();
@@ -42,6 +42,12 @@ export function Navbar() {
                     className="transition-colors hover:text-foreground/80 text-foreground/60"
                   >
                     My Books
+                  </Link>
+                  <Link
+                    href="/favorites"
+                    className="transition-colors hover:text-foreground/80 text-foreground/60"
+                  >
+                    My Favorites
                   </Link>
                   <Link
                     href="/my-transactions"
@@ -140,6 +146,12 @@ export function Navbar() {
                         <Link href="/my-transactions">
                           <ShoppingBag className="mr-2 h-4 w-4" />
                           <span>My Transactions</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/favorites">
+                          <Heart className="mr-2 h-4 w-4" />
+                          <span>My Favorites</span>
                         </Link>
                       </DropdownMenuItem>
                     </>
