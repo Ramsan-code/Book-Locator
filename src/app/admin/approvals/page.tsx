@@ -29,7 +29,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { adminApi } from "@/lib/api";
+import { adminService } from "@/services";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface PendingUser {
@@ -51,7 +51,7 @@ export default function AdminApprovalsPage() {
     const fetchPending = async () => {
       if (!token) return;
       try {
-        const res = await adminApi.getPendingReaders(token);
+        const res = await adminService.getPendingReaders(token);
         setPendingUsers(res.data || []);
         setIsLoading(false);
       } catch (error) {
@@ -67,7 +67,7 @@ export default function AdminApprovalsPage() {
     if (!token) return;
     setActionLoading(id);
     try {
-      await adminApi.approveReader(token, id);
+      await adminService.approveReader(token, id);
       setPendingUsers(prev => prev.filter(u => u._id !== id));
       toast.success("User approved successfully");
     } catch (error) {
@@ -81,7 +81,7 @@ export default function AdminApprovalsPage() {
     if (!token) return;
     setActionLoading(id);
     try {
-      await adminApi.rejectReader(token, id);
+      await adminService.rejectReader(token, id);
       setPendingUsers(prev => prev.filter(u => u._id !== id));
       toast.success("User rejected");
     } catch (error) {

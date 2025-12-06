@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { adminApi } from "@/lib/api";
+import { adminService } from "@/services";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,7 +27,7 @@ export default function SettingsPage() {
   const fetchSettings = React.useCallback(async () => {
     if (!token) return;
     try {
-      const res = await adminApi.getSettings(token);
+      const res = await adminService.getSettings(token);
       if (res.success) {
         setSettings(res.data);
       }
@@ -48,7 +48,7 @@ export default function SettingsPage() {
     setIsSaving(true);
     try {
       const updates = settings.map(({ key, value }) => ({ key, value }));
-      await adminApi.updateSettings(token, updates);
+      await adminService.updateSettings(token, updates);
       toast.success("Settings updated successfully");
     } catch (error) {
       console.error("Failed to update settings", error);

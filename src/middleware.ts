@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Protect admin routes except login
@@ -14,12 +14,15 @@ export function proxy(request: NextRequest) {
     }
 
     try {
-      const user = JSON.parse(userStr);
+      // Decode the URL-encoded cookie value before parsing
+      const decodedUserStr = decodeURIComponent(userStr);
+      const user = JSON.parse(decodedUserStr);
 
       if (user.role !== 'admin') {
         return NextResponse.redirect(new URL('/admin/login', request.url));
       }
-    } catch {
+    } catch (error) {
+      console.error('Middleware: Failed to parse user cookie:', error);
       return NextResponse.redirect(new URL('/admin/login', request.url));
     }
   }

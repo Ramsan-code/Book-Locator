@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { transactionsApi } from "@/lib/api";
+import { transactionService } from "@/services";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { LoginModal } from "@/components/auth/LoginModal";
@@ -32,8 +32,8 @@ export default function TransactionsPage() {
     try {
       setIsLoading(true);
       const [myRes, incomingRes] = await Promise.all([
-        transactionsApi.getMyRequests(token).catch(() => ({ success: false, transactions: [] })),
-        transactionsApi.getIncomingRequests(token).catch(() => ({ success: false, transactions: [] })),
+        transactionService.getMyRequests(token).catch(() => ({ success: false, transactions: [] })),
+        transactionService.getIncomingRequests(token).catch(() => ({ success: false, transactions: [] })),
       ]);
 
       if (myRes.success) setMyRequests(myRes.transactions);
@@ -96,7 +96,7 @@ export default function TransactionsPage() {
     if (!token) return;
     setActionLoading(id);
     try {
-      await transactionsApi.updateStatus(token, id, status);
+      await transactionService.updateStatus(token, id, status);
       toast.success(`Request ${status}`);
       // Optimistic update or refetch
       setIncomingRequests(prev => prev.map(req => req._id === id ? { ...req, status } : req));

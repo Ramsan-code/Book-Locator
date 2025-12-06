@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { booksApi, reviewsApi } from "@/lib/api";
+import { bookService, reviewService } from "@/services";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { useAuth } from "@/contexts/AuthContext";
 import { LoginModal } from "@/components/auth/LoginModal";
@@ -115,7 +115,7 @@ export default function OwnerProfilePage() {
         
         // Try to fetch real stats if available
         try {
-          const ownerStats = await reviewsApi.getOwnerStats(ownerId);
+          const ownerStats = await reviewService.getOwnerStats(ownerId);
           if (ownerStats.success) {
             setStats({
               averageRating: ownerStats.averageRating,

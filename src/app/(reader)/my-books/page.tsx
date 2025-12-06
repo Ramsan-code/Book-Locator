@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { booksApi } from "@/lib/api";
+import { bookService } from "@/services";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { LoginModal } from "@/components/auth/LoginModal";
@@ -34,7 +34,7 @@ export default function MyBooksPage() {
           isApproved: "all", // Fetch both approved and pending books
         });
         
-        const res = await booksApi.getAll(params.toString());
+        const res = await bookService.getAll(params.toString());
         
         if (res.success && res.books) {
           setBooks(res.books);

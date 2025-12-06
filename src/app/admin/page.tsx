@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users, CheckCircle, Settings, UserCheck, DollarSign, Mail, Loader2 } from "lucide-react";
-import { adminApi } from "@/lib/api";
+import { adminService } from "@/services";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -20,7 +20,7 @@ export default function AdminDashboard() {
   const fetchSettings = React.useCallback(async () => {
     if (!token) return;
     try {
-      const res = await adminApi.getSettings(token);
+      const res = await adminService.getSettings(token);
       if (res.success) {
         const commissionSetting = res.data.find((s: any) => s.key === "commission_rate");
         if (commissionSetting) {
@@ -36,7 +36,7 @@ export default function AdminDashboard() {
   const fetchCommissions = React.useCallback(async () => {
     if (!token) return;
     try {
-      const res = await adminApi.getPendingCommissions(token);
+      const res = await adminService.getPendingCommissions(token);
       if (res.success) {
         setPendingCommissions(res.transactions);
       }
@@ -56,7 +56,7 @@ export default function AdminDashboard() {
     if (!token) return;
     setSharingLoading(transactionId);
     try {
-      await adminApi.shareContactInfo(token, transactionId);
+      await adminService.shareContactInfo(token, transactionId);
       toast.success("Contact info shared successfully!");
       fetchCommissions(); // Refresh list
     } catch (error) {

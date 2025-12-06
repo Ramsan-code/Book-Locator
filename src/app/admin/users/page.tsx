@@ -23,7 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { adminApi } from "@/lib/api";
+import { adminService } from "@/services";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function AdminUsersPage() {
@@ -38,7 +38,7 @@ export default function AdminUsersPage() {
     try {
       setIsLoading(true);
       // Fetch all users
-      const res = await adminApi.getAllReaders(token);
+      const res = await adminService.getAllReaders(token);
       // Handle both array response (from paginationResponse helper) or direct array
       const usersData = res.data || [];
       setUsers(Array.isArray(usersData) ? usersData : []);
@@ -57,7 +57,7 @@ export default function AdminUsersPage() {
   const handleToggleStatus = async (userId: string, currentStatus: boolean) => {
     if (!token) return;
     try {
-      await adminApi.toggleUserStatus(token, userId);
+      await adminService.toggleUserStatus(token, userId);
       toast.success(`User ${currentStatus ? "deactivated" : "activated"} successfully`);
       
       // Update local state
@@ -76,7 +76,7 @@ export default function AdminUsersPage() {
     if (!confirm("Are you sure you want to delete this user? This action cannot be undone.")) return;
     
     try {
-      await adminApi.rejectReader(token, userId);
+      await adminService.rejectReader(token, userId);
       toast.success("User deleted successfully");
       setUsers(prev => prev.filter(u => u._id !== userId));
     } catch (error) {

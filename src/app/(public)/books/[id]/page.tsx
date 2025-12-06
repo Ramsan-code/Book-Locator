@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { booksApi, transactionsApi, reviewsApi } from "@/lib/api";
+import { bookService, transactionService, reviewService } from "@/services";
 import { useAuth } from "@/contexts/AuthContext";
 import { calculateDistance, formatDistance } from "@/lib/location";
 import { toast } from "sonner";
@@ -44,7 +44,7 @@ export default function BookDetailsPage() {
     const fetchBook = async () => {
       try {
         setIsLoading(true);
-        const res = await booksApi.getOne(params.id as string).catch(() => ({ success: false, book: null }));
+        const res = await bookService.getOne(params.id as string).catch(() => ({ success: false, book: null }));
         if (res.success && res.book) {
           setBook(res.book);
         } else {
@@ -143,7 +143,7 @@ export default function BookDetailsPage() {
   React.useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await reviewsApi.getByBook(params.id as string);
+        const res = await reviewService.getByBook(params.id as string);
         if (res.success) {
           setReviews(res.reviews || []);
         }
@@ -158,7 +158,7 @@ export default function BookDetailsPage() {
   React.useEffect(() => {
     const fetchOwnerStats = async () => {
       if (book?.owner?._id) {
-        const stats = await reviewsApi.getOwnerStats(book.owner._id);
+        const stats = await reviewService.getOwnerStats(book.owner._id);
         if (stats.success) {
           setOwnerStats({
             averageRating: stats.averageRating,
@@ -190,7 +190,7 @@ export default function BookDetailsPage() {
 
     setIsRequesting(true);
     try {
-      await transactionsApi.create(token, { bookId: book._id });
+      await transactionService.create(token, { bookId: book._id });
       toast.success("Book requested successfully!");
       router.push("/my-transactions");
     } catch (error: any) {
@@ -204,7 +204,7 @@ export default function BookDetailsPage() {
     if (!token) return;
     setIsSubmittingReview(true);
     try {
-      const res = await reviewsApi.create(token, params.id as string, data);
+      const res = await reviewService.create(token, params.id as string, data);
       if (res.success) {
         setReviews([res.review, ...reviews]);
       }
@@ -216,7 +216,7 @@ export default function BookDetailsPage() {
   const handleDeleteReview = async (reviewId: string) => {
     if (!token) return;
     try {
-      await reviewsApi.delete(token, reviewId);
+      await reviewService.delete(token, reviewId);
       setReviews(reviews.filter((r) => r._id !== reviewId));
       toast.success("Review deleted successfully");
     } catch (error: any) {

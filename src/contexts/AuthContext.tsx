@@ -10,7 +10,14 @@ import React, {
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { User, AuthContextType, LoginCredentials, RegisterData, UserRole } from "@/types/auth";
-import { authApi, ApiError } from "@/lib/api";
+import { authService, getErrorMessage } from "@/services/auth.service";
+
+class ApiError extends Error {
+  constructor(public message: string) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -77,7 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setToken(storedToken);
         setUser(JSON.parse(storedUser));
 
-        const res = await authApi.getMe(storedToken);
+        const res = await authService.getMe(storedToken);
         setUser(res.user);
         saveAuth(storedToken, res.user);
       } catch {
@@ -99,7 +106,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async (credentials: LoginCredentials) => {
       try {
         setIsLoading(true);
-        const res = await authApi.login(credentials);
+        const res = await authService.login(credentials);
 
         if (!res.token) {
           toast.error("Login failed: No token received");
@@ -129,7 +136,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async (data: RegisterData) => {
       try {
         setIsLoading(true);
-        const res = await authApi.register(data);
+        const res = await authService.register(data);
 
         // Roles requiring approval
         if (["user"].includes(data.role)) {
@@ -162,7 +169,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // -------------------------------------------------
   const logout = useCallback(async () => {
     try {
-      if (token) await authApi.logout(token);
+      if (token) await authService.logout(token);
     } catch (err) {
       console.error("Logout error:", err);
     } finally {
@@ -180,7 +187,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const checkAuth = useCallback(async () => {
     if (!token) return;
     try {
-      const res = await authApi.getMe(token);
+      const res = await authService.getMe(token);
       setUser(res.user);
       saveAuth(token, res.user);
     } catch (err) {

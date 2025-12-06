@@ -14,7 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { booksApi } from "@/lib/api";
+import { bookService } from "@/services";
 import { toast } from "sonner";
 import { BookFilters } from "@/components/books/BookFilters";
 import { useAuth } from "@/contexts/AuthContext";
@@ -108,14 +108,14 @@ function AdminBookSearchContent() {
         if (filters.maxPrice !== undefined) params.append("maxPrice", filters.maxPrice.toString());
         
         // Admin can see all books (not just available ones)
-        const res = await booksApi.getAll(params.toString());
+        const res = await bookService.getAll(params.toString());
         
         if (res.success && res.books && res.books.length > 0) {
           let booksData = res.books;
           
           // Sort by distance if user location is available
           if (userLocation) {
-            booksData = sortByDistance(booksData, userLocation.latitude, userLocation.longitude);
+            booksData = sortByDistance(booksData as any, userLocation.latitude, userLocation.longitude) as any;
           }
           
           setBooks(booksData);

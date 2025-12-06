@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Loader2, CreditCard, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
-import { transactionsApi } from "@/lib/api";
+import { transactionService } from "@/services";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface CommissionPaymentProps {
@@ -42,7 +42,7 @@ export function CommissionPayment({ transaction, onPaymentComplete, role }: Comm
       const mockPaymentId = `pay_${Math.random().toString(36).substring(7)}`;
       
       // Call API to record payment
-      await transactionsApi.payCommission(token, transaction._id, mockPaymentId, role);
+      await transactionService.payCommission(token, transaction._id, mockPaymentId, role);
       
       setIsSuccess(true);
       toast.success("Commission payment successful!");

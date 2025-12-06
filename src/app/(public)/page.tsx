@@ -28,8 +28,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { booksApi, adminApi } from "@/lib/api";
-import { reviewsApi } from "@/lib/api";
+import { bookService, adminService, reviewService } from "@/services";
 import { useAuth } from "@/contexts/AuthContext";
 import { getCurrentLocation, sortByDistance, formatDistance } from "@/lib/location";
 import { RatingDisplay } from "@/components/reviews/RatingDisplay";
@@ -73,7 +72,7 @@ export default function Home() {
   React.useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await adminApi.getPublicSettings();
+        const res = await adminService.getPublicSettings();
         if (res.success && res.data) {
           setFeaturedLimit(res.data.featured_listings_limit || 4);
           setNewArrivalsLimit(res.data.new_arrivals_limit || 4);
@@ -95,9 +94,9 @@ export default function Home() {
         const searchParam = searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : '';
         
         const [featuredRes, newRes, allRes] = await Promise.all([
-          booksApi.getAll(`${searchParam}isFeatured=true&sort=-views&limit=${featuredLimit}&available=true`),
-          booksApi.getAll(`${searchParam}sort=-views,-createdAt&limit=${newArrivalsLimit}&available=true`),
-          booksApi.getAll(`${searchParam}limit=8&available=true`),
+          bookService.getAll(`${searchParam}isFeatured=true&sort=-views&limit=${featuredLimit}&available=true`),
+          bookService.getAll(`${searchParam}sort=-views,-createdAt&limit=${newArrivalsLimit}&available=true`),
+          bookService.getAll(`${searchParam}limit=8&available=true`),
         ]);
         const processBooks = (res: any) => {
           if (res.success && res.books) {
@@ -125,7 +124,7 @@ export default function Home() {
   React.useEffect(() => {
     const fetchOwnerStats = async () => {
       if (featuredBooks.length > 0 && featuredBooks[0].ownerId) {
-        const stats = await reviewsApi.getOwnerStats(featuredBooks[0].ownerId);
+        const stats = await reviewService.getOwnerStats(featuredBooks[0].ownerId);
         if (stats.success) setOwnerStats({ averageRating: stats.averageRating, reviewCount: stats.reviewCount });
       }
     };
@@ -136,7 +135,7 @@ export default function Home() {
   React.useEffect(() => {
     const fetchBookReviews = async () => {
       if (featuredBooks.length > 0) {
-        const res = await reviewsApi.getByBook(featuredBooks[0]._id);
+        const res = await reviewService.getByBook(featuredBooks[0]._id);
         if (res.success) setBookReviews(res.reviews.slice(0, 3)); // take first 3
       }
     };

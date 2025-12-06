@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { booksApi } from "@/lib/api";
+import { bookService } from "@/services";
 import { toast } from "sonner";
 
 export default function MyFavoritesPage() {
@@ -40,7 +40,7 @@ export default function MyFavoritesPage() {
         // Fetch details for each favorite book
         const bookPromises = storedFavorites.map(async (bookId: string) => {
           try {
-            const res = await booksApi.getOne(bookId);
+            const res = await bookService.getOne(bookId);
             if (res.success && res.book) {
               return res.book;
             }

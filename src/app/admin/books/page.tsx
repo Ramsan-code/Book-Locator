@@ -41,7 +41,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-import { adminApi } from "@/lib/api";
+import { adminService } from "@/services";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function AdminBooksPage() {
@@ -60,7 +60,7 @@ export default function AdminBooksPage() {
       if (!token) return;
       try {
         setIsLoading(true);
-        const response = await adminApi.getPendingBooks(token);
+        const response = await adminService.getPendingBooks(token);
         setPendingBooks(response.data || []);
         setIsLoading(false);
       } catch (error) {
@@ -76,7 +76,7 @@ export default function AdminBooksPage() {
     if (!token) return;
     try {
       setLoadingOwner(true);
-      const response = await adminApi.getOwnerDetails(token, ownerId);
+      const response = await adminService.getOwnerDetails(token, ownerId);
       setOwnerDetails(response.data);
       setLoadingOwner(false);
     } catch (error) {
@@ -89,7 +89,7 @@ export default function AdminBooksPage() {
     if (!token) return;
     setActionLoading(id);
     try {
-      await adminApi.approveBook(token, id);
+      await adminService.approveBook(token, id);
       setPendingBooks(prev => prev.filter(b => b._id !== id));
       toast.success("Book approved successfully");
       setSelectedBook(null);
@@ -108,7 +108,7 @@ export default function AdminBooksPage() {
     }
     setActionLoading(id);
     try {
-      await adminApi.rejectBook(token, id, rejectionReason);
+      await adminService.rejectBook(token, id, rejectionReason);
       setPendingBooks(prev => prev.filter(b => b._id !== id));
       toast.success("Book rejected");
       setSelectedBook(null);

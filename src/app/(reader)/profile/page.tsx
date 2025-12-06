@@ -25,7 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
-import { reviewsApi, profileApi, booksApi } from "@/lib/api";
+import { reviewService, profileService, bookService } from "@/services";
 
 export default function ProfilePage() {
   const { user, logout, isLoading: authLoading, checkAuth } = useAuth();
@@ -67,7 +67,7 @@ export default function ProfilePage() {
       // Fetch user's review stats
       const fetchStats = async () => {
         try {
-          const ownerStats = await reviewsApi.getOwnerStats(user._id);
+          const ownerStats = await reviewService.getOwnerStats(user._id);
           if (ownerStats.success) {
             setStats({
               averageRating: ownerStats.averageRating,
@@ -88,8 +88,8 @@ export default function ProfilePage() {
 
     setIsUploading(true);
     try {
-      // Use booksApi.uploadImage as a generic upload handler since it hits /api/upload
-      const res = await booksApi.uploadImage(localStorage.getItem("token") || "", file);
+      // Use bookService.uploadImage as a generic upload handler since it hits /api/upload
+      const res = await bookService.uploadImage(localStorage.getItem("token") || "", file);
       if (res.image) {
         setImage(res.image);
         toast.success("Image uploaded successfully");
@@ -124,7 +124,7 @@ export default function ProfilePage() {
         image: image, // Send the image URL
       };
 
-      const res = await profileApi.updateProfile(token, updateData);
+      const res = await profileService.updateProfile(token, updateData);
       
       if (res.success) {
         toast.success("Profile updated successfully!");
