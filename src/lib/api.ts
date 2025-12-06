@@ -2,7 +2,7 @@
 
 import { AuthResponse, LoginCredentials, RegisterData } from "@/types/auth";
 
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = "https://book-link-api-git-main-ramsan.vercel.app";
 
 // ----------------------
 // Custom Error Class
