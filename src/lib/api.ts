@@ -2,7 +2,7 @@
 
 import { AuthResponse, LoginCredentials, RegisterData } from "@/types/auth";
 
-const API_BASE_URL = "https://book-locator-api.vercel.app/api";
+const API_BASE_URL = "https://book-locator-api.vercel.app";
 
 // ----------------------
 // Custom Error Class
