@@ -120,6 +120,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         toast.success(res.message || "Login successful");
         router.push(getRoleRedirect(res.user.role));
       } catch (err) {
+        console.error("Login error details:", err);
         toast.error(err instanceof ApiError ? err.message : "Login failed");
         throw err;
       } finally {

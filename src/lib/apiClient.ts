@@ -10,6 +10,8 @@ const apiClient = axios.create({
   },
 });
 
+console.log("API Client Base URL:", apiClient.defaults.baseURL);
+
 // Request interceptor: Add token from cookies
 apiClient.interceptors.request.use(
   (config) => {
