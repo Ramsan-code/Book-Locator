@@ -11,6 +11,7 @@ export interface User {
   createdAt?: string;
   
   // Location fields
+  location?: string;
   latitude?: number;
   longitude?: number;
   address?: string;
