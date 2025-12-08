@@ -70,18 +70,18 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50/50">
-      <Card className="w-full sm:max-w-[400px] shadow-lg border-gray-100">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-muted/50">
+      <Card className="w-full sm:max-w-[400px] shadow-lg border-border">
         <CardHeader className="space-y-1 text-center pt-10">
           <div className="flex justify-center mb-4">
-            <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
-              <LogIn className="h-6 w-6 text-gray-900" />
+            <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
+              <LogIn className="h-6 w-6 text-foreground" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold text-gray-900">
+          <CardTitle className="text-2xl font-bold text-foreground">
             Welcome Back
           </CardTitle>
-          <CardDescription className="text-gray-500 text-sm">
+          <CardDescription className="text-muted-foreground text-sm">
             Sign in to your account to continue
           </CardDescription>
         </CardHeader>
@@ -93,7 +93,7 @@ export default function AdminLoginPage() {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid} className="space-y-1.5">
-                    <FieldLabel htmlFor="form-admin-login-email" className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                    <FieldLabel htmlFor="form-admin-login-email" className="text-sm font-medium text-foreground flex items-center gap-2">
                       <Mail className="h-4 w-4" />
                       Email Address
                     </FieldLabel>
@@ -104,7 +104,7 @@ export default function AdminLoginPage() {
                       placeholder="you@example.com"
                       autoComplete="email"
                       type="email"
-                      className="h-11 bg-white border-gray-200 focus:border-gray-900 focus:ring-gray-900 rounded-md"
+                      className="h-11 bg-background border-input focus:border-ring focus:ring-ring rounded-md"
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
@@ -118,7 +118,7 @@ export default function AdminLoginPage() {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid} className="space-y-1.5">
-                    <FieldLabel htmlFor="form-admin-login-password" className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                    <FieldLabel htmlFor="form-admin-login-password" className="text-sm font-medium text-foreground flex items-center gap-2">
                       <Lock className="h-4 w-4" />
                       Password
                     </FieldLabel>
@@ -129,7 +129,7 @@ export default function AdminLoginPage() {
                       placeholder="Enter your password"
                       autoComplete="current-password"
                       type="password"
-                      className="h-11 bg-white border-gray-200 focus:border-gray-900 focus:ring-gray-900 rounded-md"
+                      className="h-11 bg-background border-input focus:border-ring focus:ring-ring rounded-md"
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
@@ -144,7 +144,7 @@ export default function AdminLoginPage() {
           <Button
             type="submit"
             form="form-admin-login"
-            className="w-full h-11 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-md transition-colors"
+            className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-md transition-colors"
             disabled={isSubmitting}
           >
             {isSubmitting ? (

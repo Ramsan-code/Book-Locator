@@ -24,7 +24,7 @@ export default function AboutPage() {
         ].map((stat, index) => (
           <Card key={index} className="text-center border-none shadow-none bg-muted/30">
             <CardContent className="pt-6">
-              <div className="mx-auto w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center mb-4 text-emerald-600">
+              <div className="mx-auto w-12 h-12 rounded-full bg-success/10 flex items-center justify-center mb-4 text-success">
                 <stat.icon className="h-6 w-6" />
               </div>
               <div className="text-3xl font-bold mb-1">{stat.value}</div>
@@ -45,7 +45,7 @@ export default function AboutPage() {
             By creating a platform for book enthusiasts to list, share, and request books, we're building a sustainable community of readers who support each other's passion for learning and storytelling.
           </p>
         </div>
-        <div className="relative h-[400px] rounded-2xl overflow-hidden bg-gray-100">
+        <div className="relative h-[400px] rounded-2xl overflow-hidden bg-muted">
           <img 
             src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=1000&auto=format&fit=crop" 
             alt="Library" 

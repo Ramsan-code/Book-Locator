@@ -142,7 +142,7 @@ export default function AdminApprovalsPage() {
                       <div className="flex justify-end gap-2">
                         <Dialog>
                           <DialogTrigger asChild>
-                            <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700 hover:bg-red-50">
+                            <Button variant="outline" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10">
                               <X className="h-4 w-4 mr-1" /> Reject
                             </Button>
                           </DialogTrigger>
@@ -163,7 +163,7 @@ export default function AdminApprovalsPage() {
 
                         <Dialog>
                           <DialogTrigger asChild>
-                            <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">
+                            <Button size="sm" className="bg-success hover:bg-success/90">
                               <Check className="h-4 w-4 mr-1" /> Approve
                             </Button>
                           </DialogTrigger>

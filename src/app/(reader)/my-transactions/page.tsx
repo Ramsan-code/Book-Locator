@@ -121,22 +121,22 @@ export default function TransactionsPage() {
   const getStatusBadge = (status: string, transaction?: any, role?: 'buyer' | 'seller') => {
     switch (status) {
       case 'accepted': 
-        return <Badge className="bg-emerald-500">Accepted</Badge>;
+        return <Badge className="bg-success">Accepted</Badge>;
       case 'commission_pending':
         if (role === 'buyer') {
           return transaction?.buyerCommissionPaid 
-            ? <Badge className="bg-blue-500">Paid (Waiting for Seller)</Badge>
-            : <Badge variant="outline" className="border-emerald-500 text-emerald-600">Payment Required</Badge>;
+            ? <Badge className="bg-info">Paid (Waiting for Seller)</Badge>
+            : <Badge variant="outline" className="border-success text-success">Payment Required</Badge>;
         } else if (role === 'seller') {
           return transaction?.sellerCommissionPaid
-            ? <Badge className="bg-blue-500">Paid (Waiting for Buyer)</Badge>
-            : <Badge variant="outline" className="border-emerald-500 text-emerald-600">Payment Required</Badge>;
+            ? <Badge className="bg-info">Paid (Waiting for Buyer)</Badge>
+            : <Badge variant="outline" className="border-success text-success">Payment Required</Badge>;
         }
-        return <Badge className="bg-yellow-500">Commission Pending</Badge>;
+        return <Badge className="bg-warning">Commission Pending</Badge>;
       case 'commission_paid':
-        return <Badge className="bg-purple-500">Processing Contact Info...</Badge>;
+        return <Badge className="bg-primary">Processing Contact Info...</Badge>;
       case 'completed':
-        return <Badge className="bg-green-600">Contact Shared</Badge>;
+        return <Badge className="bg-success">Contact Shared</Badge>;
       case 'rejected': 
         return <Badge variant="destructive">Rejected</Badge>;
       default: 
@@ -189,12 +189,12 @@ export default function TransactionsPage() {
                         {req.status === 'commission_pending' && (
                           <div className="mt-3">
                             {!req.buyerCommissionPaid ? (
-                              <div className="flex items-center gap-2 text-sm text-amber-600 bg-amber-50 p-2 rounded border border-amber-200">
+                              <div className="flex items-center gap-2 text-sm text-warning bg-warning/10 p-2 rounded border border-warning/20">
                                 <Info className="h-4 w-4" />
                                 <span>Please pay commission to receive seller contact.</span>
                               </div>
                             ) : (
-                              <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 p-2 rounded border border-blue-200">
+                              <div className="flex items-center gap-2 text-sm text-info bg-info/10 p-2 rounded border border-info/20">
                                 <Clock className="h-4 w-4" />
                                 <span>You paid! Waiting for seller to pay commission.</span>
                               </div>
@@ -204,11 +204,11 @@ export default function TransactionsPage() {
                         
                         {/* Contact Info Display (When Completed) */}
                         {req.status === 'completed' && (
-                          <div className="mt-3 bg-green-50 border border-green-200 rounded-md p-3">
-                            <h5 className="font-semibold text-green-800 flex items-center gap-2 mb-2">
+                          <div className="mt-3 bg-success/10 border border-success/20 rounded-md p-3">
+                            <h5 className="font-semibold text-success flex items-center gap-2 mb-2">
                               <User className="h-4 w-4" /> Seller Contact
                             </h5>
-                            <div className="grid gap-1 text-sm text-green-700">
+                            <div className="grid gap-1 text-sm text-success">
                               <div className="flex items-center gap-2">
                                 <User className="h-3 w-3" /> {req.seller?.name}
                               </div>
@@ -285,7 +285,7 @@ export default function TransactionsPage() {
                               <Button 
                                 size="sm" 
                                 variant="outline" 
-                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                className="text-destructive hover:text-destructive hover:bg-destructive/10"
                                 onClick={() => handleStatusUpdate(req._id, 'rejected')}
                                 disabled={actionLoading === req._id}
                               >
@@ -315,18 +315,18 @@ export default function TransactionsPage() {
                         
                         {/* Seller Status Message */}
                         {req.status === 'commission_pending' && req.sellerCommissionPaid && (
-                          <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded border border-blue-200 mt-1">
+                          <div className="text-xs text-info bg-info/10 p-2 rounded border border-info/20 mt-1">
                             Waiting for buyer to pay commission.
                           </div>
                         )}
                         
                         {/* Contact Info for Seller */}
                         {req.status === 'completed' && (
-                          <div className="mt-2 bg-green-50 border border-green-200 rounded-md p-3 w-full max-w-xs">
-                            <h5 className="font-semibold text-green-800 flex items-center gap-2 mb-2">
+                          <div className="mt-2 bg-success/10 border border-success/20 rounded-md p-3 w-full max-w-xs">
+                            <h5 className="font-semibold text-success flex items-center gap-2 mb-2">
                               <User className="h-4 w-4" /> Buyer Contact
                             </h5>
-                            <div className="grid gap-1 text-sm text-green-700">
+                            <div className="grid gap-1 text-sm text-success">
                               <div className="flex items-center gap-2">
                                 <User className="h-3 w-3" /> {req.buyer?.name || req.requester?.name}
                               </div>

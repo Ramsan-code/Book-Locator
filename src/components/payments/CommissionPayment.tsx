@@ -67,8 +67,8 @@ export function CommissionPayment({ transaction, onPaymentComplete, role }: Comm
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-emerald-600 hover:bg-emerald-700">
-          Pay ₹{commissionAmount.toFixed(2)} Commission
+        <Button className="bg-success hover:bg-success/90">
+          Pay Rs. {commissionAmount.toFixed(2)} Commission
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
@@ -81,31 +81,31 @@ export function CommissionPayment({ transaction, onPaymentComplete, role }: Comm
         
         {isSuccess ? (
           <div className="flex flex-col items-center justify-center py-6 space-y-4">
-            <CheckCircle2 className="h-16 w-16 text-emerald-500 animate-in zoom-in duration-300" />
-            <p className="text-lg font-medium text-emerald-600">Payment Successful!</p>
+            <CheckCircle2 className="h-16 w-16 text-success animate-in zoom-in duration-300" />
+            <p className="text-lg font-medium text-success">Payment Successful!</p>
             <p className="text-sm text-muted-foreground text-center">
               Thank you for your payment. We'll verify it shortly.
             </p>
           </div>
         ) : (
           <div className="space-y-6 py-4">
-            <div className="bg-slate-50 p-4 rounded-lg space-y-3 border">
+            <div className="bg-muted/50 p-4 rounded-lg space-y-3 border">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Book Price:</span>
-                <span className="font-medium">₹{transaction.price}</span>
+                <span className="font-medium">Rs. {transaction.price}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Commission (8%):</span>
-                <span className="font-medium">₹{commissionAmount.toFixed(2)}</span>
+                <span className="font-medium">Rs. {commissionAmount.toFixed(2)}</span>
               </div>
               <div className="border-t pt-2 flex justify-between font-bold">
                 <span>Total to Pay:</span>
-                <span className="text-emerald-600">₹{commissionAmount.toFixed(2)}</span>
+                <span className="text-success">Rs. {commissionAmount.toFixed(2)}</span>
               </div>
             </div>
             
-            <div className="text-xs text-muted-foreground bg-blue-50 text-blue-700 p-3 rounded border border-blue-100">
-              <strong>Note:</strong> This is a secure payment for the platform fee only. The book price (₹{transaction.price}) will be paid directly to the {role === 'buyer' ? 'seller' : 'buyer'} when you meet.
+            <div className="text-xs text-muted-foreground bg-info/10 text-info p-3 rounded border border-info/20">
+              <strong>Note:</strong> This is a secure payment for the platform fee only. The book price (Rs. {transaction.price}) will be paid directly to the {role === 'buyer' ? 'seller' : 'buyer'} when you meet.
             </div>
           </div>
         )}
@@ -114,7 +114,7 @@ export function CommissionPayment({ transaction, onPaymentComplete, role }: Comm
           {!isSuccess && (
             <Button 
               type="button" 
-              className="w-full bg-emerald-600 hover:bg-emerald-700" 
+              className="w-full bg-success hover:bg-success/90" 
               onClick={handlePayment}
               disabled={isLoading}
             >

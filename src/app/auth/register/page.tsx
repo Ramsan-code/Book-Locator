@@ -89,7 +89,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50/50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-muted/50 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
@@ -191,7 +191,7 @@ export default function RegisterPage() {
               Register
             </Button>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+            <div className="bg-info/10 border border-info/20 rounded-lg p-3 text-sm text-info">
               <p className="font-medium">⏳ Approval Required</p>
               <p className="text-xs mt-1">
                 Your account will be reviewed by an admin before you can login.

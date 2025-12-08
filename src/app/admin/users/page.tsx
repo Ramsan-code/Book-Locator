@@ -131,7 +131,7 @@ export default function AdminUsersPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Approved</CardTitle>
-            <UserCheck className="h-4 w-4 text-green-600" />
+            <UserCheck className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{users.filter(u => u.isApproved).length}</div>
@@ -140,7 +140,7 @@ export default function AdminUsersPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Pending</CardTitle>
-            <UserX className="h-4 w-4 text-orange-600" />
+            <UserX className="h-4 w-4 text-warning" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{users.filter(u => !u.isApproved).length}</div>
@@ -179,7 +179,7 @@ export default function AdminUsersPage() {
           </div>
 
           {filteredUsers.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground bg-slate-50 rounded-lg border border-dashed">
+            <div className="text-center py-12 text-muted-foreground bg-muted/50 rounded-lg border border-dashed">
               <User className="h-12 w-12 mx-auto mb-3 opacity-20" />
               <p>No users found matching your criteria.</p>
             </div>
@@ -213,12 +213,12 @@ export default function AdminUsersPage() {
                     </TableCell>
                     <TableCell>
                       {user.isApproved ? (
-                        <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+                        <Badge className="bg-success/10 text-success hover:bg-success/20">
                           <UserCheck className="h-3 w-3 mr-1" />
                           Approved
                         </Badge>
                       ) : (
-                        <Badge variant="secondary" className="bg-orange-100 text-orange-800">
+                        <Badge variant="secondary" className="bg-warning/10 text-warning">
                           <UserX className="h-3 w-3 mr-1" />
                           Pending
                         </Badge>
@@ -235,7 +235,7 @@ export default function AdminUsersPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleToggleStatus(user._id, user.isActive)}
-                        className={user.isActive ? "text-green-600 hover:text-green-700 hover:bg-green-50" : "text-gray-400 hover:text-gray-500 hover:bg-gray-50"}
+                        className={user.isActive ? "text-success hover:text-success hover:bg-success/10" : "text-muted-foreground hover:text-foreground hover:bg-muted"}
                         title={user.isActive ? "Deactivate User" : "Activate User"}
                       >
                         {user.isActive ? <UserCheck className="h-4 w-4" /> : <UserX className="h-4 w-4" />}
@@ -244,7 +244,7 @@ export default function AdminUsersPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDelete(user._id)}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
                         title="Delete User"
                       >
                         <Trash2 className="h-4 w-4" />

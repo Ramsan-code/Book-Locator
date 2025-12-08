@@ -316,7 +316,7 @@ export function ListBookForm() {
           </CardHeader>
           <CardContent>
             <LoginModal id="list-book-login-modal">
-              <Button className="w-full bg-emerald-600 hover:bg-emerald-700">Login Now</Button>
+              <Button className="w-full bg-success hover:bg-success/90">Login Now</Button>
             </LoginModal>
           </CardContent>
         </Card>
@@ -342,7 +342,7 @@ export function ListBookForm() {
             <div className="flex items-center gap-2">
               <div
                 className={`flex items-center justify-center w-8 h-8 rounded-full ${
-                  currentStep >= 1 ? "bg-emerald-600 text-white" : "bg-muted text-muted-foreground"
+                  currentStep >= 1 ? "bg-success text-success-foreground" : "bg-muted text-muted-foreground"
                 }`}
               >
                 {currentStep > 1 ? <Check className="h-4 w-4" /> : "1"}
@@ -352,7 +352,7 @@ export function ListBookForm() {
             <div className="flex items-center gap-2">
               <div
                 className={`flex items-center justify-center w-8 h-8 rounded-full ${
-                  currentStep >= 2 ? "bg-emerald-600 text-white" : "bg-muted text-muted-foreground"
+                  currentStep >= 2 ? "bg-success text-success-foreground" : "bg-muted text-muted-foreground"
                 }`}
               >
                 {currentStep > 2 ? <Check className="h-4 w-4" /> : "2"}
@@ -362,7 +362,7 @@ export function ListBookForm() {
             <div className="flex items-center gap-2">
               <div
                 className={`flex items-center justify-center w-8 h-8 rounded-full ${
-                  currentStep >= 3 ? "bg-emerald-600 text-white" : "bg-muted text-muted-foreground"
+                  currentStep >= 3 ? "bg-success text-success-foreground" : "bg-muted text-muted-foreground"
                 }`}
               >
                 3
@@ -394,9 +394,9 @@ export function ListBookForm() {
                       placeholder="e.g., The Hitchhiker's Guide to the Galaxy"
                       value={formData.title}
                       onChange={(e) => handleChange("title", e.target.value)}
-                      className={errors.title ? "border-red-500" : ""}
+                      className={errors.title ? "border-destructive" : ""}
                     />
-                    {errors.title && <p className="text-sm text-red-500 mt-1">{errors.title}</p>}
+                    {errors.title && <p className="text-sm text-destructive mt-1">{errors.title}</p>}
                   </div>
 
                   <div>
@@ -406,15 +406,15 @@ export function ListBookForm() {
                       placeholder="e.g., Douglas Adams"
                       value={formData.author}
                       onChange={(e) => handleChange("author", e.target.value)}
-                      className={errors.author ? "border-red-500" : ""}
+                      className={errors.author ? "border-destructive" : ""}
                     />
-                    {errors.author && <p className="text-sm text-red-500 mt-1">{errors.author}</p>}
+                    {errors.author && <p className="text-sm text-destructive mt-1">{errors.author}</p>}
                   </div>
 
                   <div>
                     <Label htmlFor="category">Category *</Label>
                     <Select value={formData.category} onValueChange={(value) => handleChange("category", value)}>
-                      <SelectTrigger className={errors.category ? "border-red-500" : ""}>
+                      <SelectTrigger className={errors.category ? "border-destructive" : ""}>
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                       <SelectContent>
@@ -425,13 +425,13 @@ export function ListBookForm() {
                         ))}
                       </SelectContent>
                     </Select>
-                    {errors.category && <p className="text-sm text-red-500 mt-1">{errors.category}</p>}
+                    {errors.category && <p className="text-sm text-destructive mt-1">{errors.category}</p>}
                   </div>
 
                   <div>
                     <Label htmlFor="condition">Condition *</Label>
                     <Select value={formData.condition} onValueChange={(value) => handleChange("condition", value)}>
-                      <SelectTrigger className={errors.condition ? "border-red-500" : ""}>
+                      <SelectTrigger className={errors.condition ? "border-destructive" : ""}>
                         <SelectValue placeholder="Select condition" />
                       </SelectTrigger>
                       <SelectContent>
@@ -442,7 +442,7 @@ export function ListBookForm() {
                         ))}
                       </SelectContent>
                     </Select>
-                    {errors.condition && <p className="text-sm text-red-500 mt-1">{errors.condition}</p>}
+                    {errors.condition && <p className="text-sm text-destructive mt-1">{errors.condition}</p>}
                   </div>
 
                   <div>
@@ -524,24 +524,24 @@ export function ListBookForm() {
 
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="price">Sale Price (₹) *</Label>
+                    <Label htmlFor="price">Sale Price (Rs.) *</Label>
                     <Input
                       id="price"
                       type="number"
                       placeholder="e.g., 500"
                       value={formData.price}
                       onChange={(e) => handleChange("price", e.target.value)}
-                      className={errors.price ? "border-red-500" : ""}
+                      className={errors.price ? "border-destructive" : ""}
                       min="0"
                       step="1"
                     />
-                    {errors.price && <p className="text-sm text-red-500 mt-1">{errors.price}</p>}
+                    {errors.price && <p className="text-sm text-destructive mt-1">{errors.price}</p>}
                   </div>
 
-                  <Card className="bg-emerald-950/20 border-emerald-800">
+                  <Card className="bg-success/10 border-success/20">
                     <CardContent className="p-4">
                       <div className="flex items-start gap-3">
-                        <div className="bg-emerald-600 rounded-full p-2">
+                        <div className="bg-success rounded-full p-2">
                           <Check className="h-4 w-4 text-white" />
                         </div>
                         <div>
@@ -571,11 +571,11 @@ export function ListBookForm() {
 
                 <div className="space-y-4">
                   {/* Google Maps URL Input */}
-                  <Card className="bg-blue-950/20 border-blue-800">
+                  <Card className="bg-info/10 border-info/20">
                     <CardContent className="p-4">
                       <div className="space-y-3">
                         <div className="flex items-start gap-3">
-                          <div className="bg-blue-600 rounded-full p-2">
+                          <div className="bg-info rounded-full p-2">
                             <Link2 className="h-4 w-4 text-white" />
                           </div>
                           <div className="flex-1">
@@ -613,9 +613,9 @@ export function ListBookForm() {
                       placeholder="Enter your full address"
                       value={formData.address}
                       onChange={(e) => handleChange("address", e.target.value)}
-                      className={errors.address ? "border-red-500" : ""}
+                      className={errors.address ? "border-destructive" : ""}
                     />
-                    {errors.address && <p className="text-sm text-red-500 mt-1">{errors.address}</p>}
+                    {errors.address && <p className="text-sm text-destructive mt-1">{errors.address}</p>}
                   </div>
 
                   {/* Coordinates */}
@@ -657,10 +657,10 @@ export function ListBookForm() {
 
                   {/* Location Preview */}
                   {formData.latitude && formData.longitude && (
-                    <Card className="bg-emerald-950/20 border-emerald-800">
+                    <Card className="bg-success/10 border-success/20">
                       <CardContent className="p-4">
                         <div className="flex items-start gap-3">
-                          <div className="bg-emerald-600 rounded-full p-2">
+                          <div className="bg-success rounded-full p-2">
                             <Check className="h-4 w-4 text-white" />
                           </div>
                           <div>
@@ -672,7 +672,7 @@ export function ListBookForm() {
                               href={`https://www.google.com/maps/@${formData.latitude},${formData.longitude},15z`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-xs text-blue-400 hover:underline"
+                              className="text-xs text-info hover:underline"
                             >
                               View on Google Maps →
                             </a>
@@ -703,7 +703,7 @@ export function ListBookForm() {
                 <Button
                   type="button"
                   onClick={nextStep}
-                  className="bg-emerald-600 hover:bg-emerald-700"
+                  className="bg-success hover:bg-success/90"
                 >
                   Next
                   <ChevronRight className="h-4 w-4 ml-2" />
@@ -713,7 +713,7 @@ export function ListBookForm() {
                   type="button"
                   onClick={handleSubmit}
                   disabled={isSubmitting}
-                  className="bg-emerald-600 hover:bg-emerald-700"
+                  className="bg-success hover:bg-success/90"
                 >
                   {isSubmitting ? "Listing..." : "List Book"}
                   <Check className="h-4 w-4 ml-2" />

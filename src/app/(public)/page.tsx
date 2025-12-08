@@ -13,7 +13,7 @@ import {
   Hourglass,
   FileText,
   Camera,
-  IndianRupee,
+  Banknote,
   Star,
   Leaf,
   Gem,
@@ -292,7 +292,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-4xl mx-auto text-center">
             {[{ icon: FileText, title: "Add Details", desc: "Enter book title, author, and ISBN details" },
               { icon: Camera, title: "Upload Photos", desc: "Showcase your book with clear pictures" },
-              { icon: IndianRupee, title: "Set Price", desc: "Choose your price and pickup location" },
+              { icon: Banknote, title: "Set Price", desc: "Choose your price and pickup location" },
             ].map((step, i) => (
               <div key={i} className="flex flex-col items-center">
                 <div className="w-16 h-16 rounded-2xl bg-background border flex items-center justify-center mb-6 text-primary shadow-sm">

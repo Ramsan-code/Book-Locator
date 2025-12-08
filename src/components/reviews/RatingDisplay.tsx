@@ -33,9 +33,9 @@ export function RatingDisplay({
           className={cn(
             sizeClasses[size],
             index < Math.floor(rating)
-              ? "fill-yellow-400 text-yellow-400"
+              ? "fill-warning text-warning"
               : index < rating
-              ? "fill-yellow-400/50 text-yellow-400"
+              ? "fill-warning/50 text-warning"
               : "fill-none text-muted-foreground"
           )}
         />

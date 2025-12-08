@@ -77,13 +77,13 @@ export function BookFilters({ filters, onFiltersChange, onClearFilters }: BookFi
           {CATEGORIES.map((category) => (
             <label
               key={category}
-              className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"
+              className="flex items-center space-x-2 cursor-pointer hover:bg-muted p-2 rounded"
             >
               <input
                 type="checkbox"
                 checked={filters.categories.includes(category)}
                 onChange={() => toggleCategory(category)}
-                className="rounded border-gray-300 text-primary focus:ring-primary"
+                className="rounded border-input text-primary focus:ring-primary"
               />
               <span className="text-sm">{category}</span>
             </label>
@@ -107,13 +107,13 @@ export function BookFilters({ filters, onFiltersChange, onClearFilters }: BookFi
           {CONDITIONS.map((condition) => (
             <label
               key={condition}
-              className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"
+              className="flex items-center space-x-2 cursor-pointer hover:bg-muted p-2 rounded"
             >
               <input
                 type="checkbox"
                 checked={filters.conditions.includes(condition)}
                 onChange={() => toggleCondition(condition)}
-                className="rounded border-gray-300 text-primary focus:ring-primary"
+                className="rounded border-input text-primary focus:ring-primary"
               />
               <span className="text-sm">{condition}</span>
             </label>
@@ -166,7 +166,7 @@ export function BookFilters({ filters, onFiltersChange, onClearFilters }: BookFi
 
       {/* Mobile Drawer */}
       {isOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 bg-black/50" onClick={() => setIsOpen(false)}>
+        <div className="lg:hidden fixed inset-0 z-50 bg-background/80 backdrop-blur-sm" onClick={() => setIsOpen(false)}>
           <div
             className="fixed inset-y-0 right-0 w-full max-w-sm bg-white shadow-xl overflow-y-auto"
             onClick={(e) => e.stopPropagation()}

@@ -79,7 +79,7 @@ export default function MyFavoritesPage() {
     <div className="container py-8 px-4">
       <div className="flex justify-between items-center mb-8">
         <div className="flex items-center gap-3">
-          <Heart className="h-8 w-8 text-red-500 fill-red-500" />
+          <Heart className="h-8 w-8 text-destructive fill-destructive" />
           <h1 className="text-3xl font-bold tracking-tight">My Favorites</h1>
         </div>
         <Link href="/books">
@@ -93,7 +93,7 @@ export default function MyFavoritesPage() {
       <div className="mb-8">
         <Card>
           <CardContent className="p-6 flex items-center gap-4">
-            <Heart className="h-10 w-10 text-red-500 fill-red-500" />
+            <Heart className="h-10 w-10 text-destructive fill-destructive" />
             <div>
               <div className="text-3xl font-bold">{books.length}</div>
               <div className="text-muted-foreground">Favorite Books</div>

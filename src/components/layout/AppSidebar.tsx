@@ -28,7 +28,7 @@ export function AppSidebar({ className, items = sidebarItems, title = "Menu", ..
   const pathname = usePathname();
 
   return (
-    <div className={cn("pb-12 w-64 border-r bg-gray-50/40 min-h-screen hidden md:block", className)} {...props}>
+    <div className={cn("pb-12 w-64 border-r bg-muted/40 min-h-screen hidden md:block", className)} {...props}>
       <div className="space-y-4 py-4">
         <div className="px-3 py-2">
           <div className="flex items-center gap-2 px-4 mb-6">

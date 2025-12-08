@@ -32,7 +32,7 @@ export default function ContactPage() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-start gap-4">
-                <div className="bg-emerald-100 p-3 rounded-full text-emerald-600">
+                <div className="bg-success/10 p-3 rounded-full text-success">
                   <MapPin className="h-6 w-6" />
                 </div>
                 <div>
@@ -46,7 +46,7 @@ export default function ContactPage() {
               </div>
 
               <div className="flex items-start gap-4">
-                <div className="bg-emerald-100 p-3 rounded-full text-emerald-600">
+                <div className="bg-success/10 p-3 rounded-full text-success">
                   <Mail className="h-6 w-6" />
                 </div>
                 <div>
@@ -59,7 +59,7 @@ export default function ContactPage() {
               </div>
 
               <div className="flex items-start gap-4">
-                <div className="bg-emerald-100 p-3 rounded-full text-emerald-600">
+                <div className="bg-success/10 p-3 rounded-full text-success">
                   <Phone className="h-6 w-6" />
                 </div>
                 <div>
@@ -73,17 +73,17 @@ export default function ContactPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-emerald-900 text-white border-none">
+          <Card className="bg-success text-success-foreground border-none">
             <CardContent className="p-8">
               <h3 className="text-xl font-bold mb-4">Frequently Asked Questions</h3>
               <div className="space-y-4">
                 <div>
                   <h4 className="font-semibold mb-1">How do I list a book?</h4>
-                  <p className="text-emerald-100 text-sm">Create an account, go to "List a Book", and fill in the details.</p>
+                  <p className="text-success-foreground/90 text-sm">Create an account, go to "List a Book", and fill in the details.</p>
                 </div>
                 <div>
                   <h4 className="font-semibold mb-1">Is it free to use?</h4>
-                  <p className="text-emerald-100 text-sm">Yes! Browsing and listing books is completely free for all users.</p>
+                  <p className="text-success-foreground/90 text-sm">Yes! Browsing and listing books is completely free for all users.</p>
                 </div>
               </div>
             </CardContent>
@@ -128,7 +128,7 @@ export default function ContactPage() {
                 />
               </div>
 
-              <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700">
+              <Button type="submit" className="w-full bg-success hover:bg-success/90">
                 <Send className="mr-2 h-4 w-4" /> Send Message
               </Button>
             </form>

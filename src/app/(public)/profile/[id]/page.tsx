@@ -271,7 +271,7 @@ export default function OwnerProfilePage() {
                       {book.title}
                     </h3>
                     <p className="text-xs text-muted-foreground mb-1">{book.author}</p>
-                    <p className="text-sm font-bold">₹{book.price}</p>
+                    <p className="text-sm font-bold">Rs. {book.price}</p>
                   </div>
                 ))}
               </div>

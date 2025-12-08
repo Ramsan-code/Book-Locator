@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
-import { Loader2, Camera, Star, Pencil, Trash2, Upload } from "lucide-react";
+import { Loader2, Camera, Star, Pencil, Trash2, Upload, Lock, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,9 +15,15 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,9 +34,8 @@ import { toast } from "sonner";
 import { reviewService, profileService, bookService } from "@/services";
 
 export default function ProfilePage() {
-  const { user, logout, isLoading: authLoading, checkAuth } = useAuth();
+  const { user, logout, isLoading: authLoading } = useAuth();
   const router = useRouter();
-  const [isLoading, setIsLoading] = React.useState(false);
   const [isUploading, setIsUploading] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const [stats, setStats] = React.useState({ averageRating: 4.5, reviewCount: 28 });
@@ -39,11 +44,21 @@ export default function ProfilePage() {
   // Form state
   const [displayName, setDisplayName] = React.useState("");
   const [username, setUsername] = React.useState("");
-  const [location, setLocation] = React.useState("");
-  const [bio, setBio] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [phone, setPhone] = React.useState("");
   const [image, setImage] = React.useState("");
+
+  // Password change dialog state
+  const [showPasswordDialog, setShowPasswordDialog] = React.useState(false);
+  const [currentPassword, setCurrentPassword] = React.useState("");
+  const [newPassword, setNewPassword] = React.useState("");
+  const [confirmPassword, setConfirmPassword] = React.useState("");
+  const [isChangingPassword, setIsChangingPassword] = React.useState(false);
+
+  // Delete account dialog state
+  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = React.useState("");
+  const [isDeletingAccount, setIsDeletingAccount] = React.useState(false);
 
   // Rating breakdown (mock data)
   const ratingBreakdown = [
@@ -59,7 +74,6 @@ export default function ProfilePage() {
     setMounted(true);
     if (user) {
       setDisplayName(user.name || "");
-      setLocation(user.address || user.city || "");
       setEmail(user.email || "");
       setPhone(user.phone_no || "");
       setImage(user.image || "");
@@ -82,6 +96,13 @@ export default function ProfilePage() {
     }
   }, [user]);
 
+  // Redirect if not logged in (must be at top level, before any conditional returns)
+  React.useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/auth/login");
+    }
+  }, [user, authLoading, router]);
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
@@ -89,7 +110,7 @@ export default function ProfilePage() {
     setIsUploading(true);
     try {
       // Use bookService.uploadImage as a generic upload handler since it hits /api/upload
-      const res = await bookService.uploadImage(localStorage.getItem("token") || "", file);
+      const res = await bookService.uploadImage(localStorage.getItem("booklink_token") || "", file);
       if (res.image) {
         setImage(res.image);
         toast.success("Image uploaded successfully");
@@ -111,38 +132,76 @@ export default function ProfilePage() {
     toast.success("Image removed. Click Save Changes to apply.");
   };
 
-  const handleSaveChanges = async () => {
-    setIsLoading(true);
+
+
+  const handleChangePassword = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error("Please fill in all password fields");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast.error("New passwords do not match");
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    setIsChangingPassword(true);
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("booklink_token");
       if (!token) return;
 
-      const updateData = {
-        name: displayName,
-        location: location,
-        email: email,
-        image: image, // Send the image URL
-      };
-
-      const res = await profileService.updateProfile(token, updateData);
+      const res = await profileService.changePassword(token, currentPassword, newPassword);
       
       if (res.success) {
-        toast.success("Profile updated successfully!");
-        // Refresh auth context to update user data across the app
-        await checkAuth();
+        toast.success("Password changed successfully!");
+        setShowPasswordDialog(false);
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
       } else {
-        toast.error("Failed to update profile");
+        toast.error("Failed to change password");
       }
-    } catch (error) {
-      console.error("Update failed:", error);
-      toast.error("Failed to update profile");
+    } catch (error: any) {
+      console.error("Password change failed:", error);
+      toast.error(error.response?.data?.message || "Failed to change password");
     } finally {
-      setIsLoading(false);
+      setIsChangingPassword(false);
     }
   };
 
-  const handleChangePassword = () => {
-    toast.info("Password change functionality coming soon!");
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmation !== "DELETE") {
+      toast.error('Please type "DELETE" to confirm');
+      return;
+    }
+
+    setIsDeletingAccount(true);
+    try {
+      const token = localStorage.getItem("booklink_token");
+      if (!token) return;
+
+      const res = await profileService.deleteAccount(token);
+      
+      if (res.success) {
+        toast.success("Account deleted successfully");
+        setShowDeleteDialog(false);
+        // Log out and redirect to home
+        await logout();
+        router.push("/");
+      } else {
+        toast.error("Failed to delete account");
+      }
+    } catch (error: any) {
+      console.error("Account deletion failed:", error);
+      toast.error(error.response?.data?.message || "Failed to delete account");
+    } finally {
+      setIsDeletingAccount(false);
+    }
   };
 
   // Show loading state
@@ -154,9 +213,8 @@ export default function ProfilePage() {
     );
   }
 
-  // Redirect if not logged in
+  // Show nothing while redirecting
   if (!user) {
-    router.push("/auth/login");
     return null;
   }
 
@@ -171,13 +229,7 @@ export default function ProfilePage() {
               Manage your personal details and public profile.
             </p>
           </div>
-          <Button 
-            onClick={handleSaveChanges} 
-            disabled={isLoading}
-          >
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Save Changes
-          </Button>
+
         </div>
 
         {/* Profile Details Card */}
@@ -252,40 +304,7 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <Separator />
 
-            {/* Form Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="displayName">Display Name</Label>
-                <Input
-                  id="displayName"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="Your name"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="location">Location</Label>
-                <Input
-                  id="location"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="City, Country"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="bio">Bio</Label>
-              <Textarea
-                id="bio"
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                placeholder="Tell us about yourself..."
-                rows={4}
-              />
-            </div>
           </CardContent>
         </Card>
 
@@ -351,7 +370,7 @@ export default function ProfilePage() {
                   Manage your account security and preferences.
                 </CardDescription>
               </div>
-              <Button onClick={handleChangePassword} variant="outline">
+              <Button onClick={() => setShowPasswordDialog(true)} variant="outline">
                 Change Password
               </Button>
             </div>
@@ -400,13 +419,136 @@ export default function ProfilePage() {
               </div>
               <Button 
                 variant="destructive" 
-                onClick={() => toast.error("Account deletion is not available yet")}
+                onClick={() => setShowDeleteDialog(true)}
               >
                 Delete Account
               </Button>
             </div>
           </CardContent>
         </Card>
+
+        {/* Change Password Dialog */}
+        <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Lock className="h-5 w-5" />
+                Change Password
+              </DialogTitle>
+              <DialogDescription>
+                Enter your current password and choose a new one.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="currentPassword">Current Password</Label>
+                <Input
+                  id="currentPassword"
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="Enter current password"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="newPassword">New Password</Label>
+                <Input
+                  id="newPassword"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password (min 6 characters)"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm new password"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setShowPasswordDialog(false);
+                  setCurrentPassword("");
+                  setNewPassword("");
+                  setConfirmPassword("");
+                }}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleChangePassword}
+                disabled={isChangingPassword}
+              >
+                {isChangingPassword && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Change Password
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Account Dialog */}
+        <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-destructive">
+                <AlertTriangle className="h-5 w-5" />
+                Delete Account
+              </DialogTitle>
+              <DialogDescription>
+                This action cannot be undone. This will permanently delete your account and remove all your data from our servers.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+                <h4 className="font-semibold text-destructive mb-2">Warning:</h4>
+                <ul className="text-sm text-destructive space-y-1 list-disc list-inside">
+                  <li>All your book listings will be removed</li>
+                  <li>Your transactions will be archived</li>
+                  <li>Your profile and reviews will be deleted</li>
+                  <li>This action cannot be reversed</li>
+                </ul>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="deleteConfirmation">
+                  Type <span className="font-bold">DELETE</span> to confirm
+                </Label>
+                <Input
+                  id="deleteConfirmation"
+                  value={deleteConfirmation}
+                  onChange={(e) => setDeleteConfirmation(e.target.value)}
+                  placeholder="Type DELETE in capital letters"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setShowDeleteDialog(false);
+                  setDeleteConfirmation("");
+                }}
+              >
+                Cancel
+              </Button>
+              <Button 
+                variant="destructive"
+                onClick={handleDeleteAccount}
+                disabled={isDeletingAccount || deleteConfirmation !== "DELETE"}
+              >
+                {isDeletingAccount && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Delete Account
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

@@ -197,7 +197,7 @@ function AdminBookSearchContent() {
                     : [...filters.categories, category];
                   setFilters({ ...filters, categories: newCategories });
                 }}
-                className={filters.categories.includes(category) ? "bg-emerald-600 hover:bg-emerald-700" : ""}
+                className={filters.categories.includes(category) ? "bg-success hover:bg-success/90" : ""}
               >
                 {category}
               </Button>
@@ -451,7 +451,7 @@ function AdminBookSearchContent() {
                                      {formatDistance(book.distance)}
                                    </span>
                                  )}
-                                 <span className="font-bold text-lg text-emerald-600">
+                                 <span className="font-bold text-lg text-success">
                                    Rs. {book.price}
                                  </span>
                               </div>

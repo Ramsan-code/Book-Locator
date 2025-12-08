@@ -91,7 +91,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+    <div className="min-h-screen bg-gradient-to-br from-muted/50 via-background to-muted">
       <div className="container mx-auto p-8">
         {/* Header */}
         <div className="mb-8">
@@ -183,7 +183,7 @@ export default function AdminDashboard() {
         {/* Pending Commissions Section */}
         <div id="commissions" className="mt-12">
           <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2">
-            <DollarSign className="h-6 w-6 text-emerald-600" />
+            <DollarSign className="h-6 w-6 text-success" />
             Pending Commissions & Contact Sharing
           </h2>
           
@@ -202,7 +202,7 @@ export default function AdminDashboard() {
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm text-left">
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                    <thead className="text-xs text-muted-foreground uppercase bg-muted">
                       <tr>
                         <th className="px-6 py-3">Book</th>
                         <th className="px-6 py-3">Buyer Status</th>
@@ -217,18 +217,18 @@ export default function AdminDashboard() {
                         const commissionAmount = tx.commissionAmount || (tx.price * commissionRate);
                         
                         return (
-                          <tr key={tx._id} className="bg-white border-b hover:bg-gray-50">
-                            <td className="px-6 py-4 font-medium text-gray-900">
+                          <tr key={tx._id} className="bg-background border-b hover:bg-muted">
+                            <td className="px-6 py-4 font-medium text-foreground">
                               {tx.book?.title}
-                              <div className="text-xs text-muted-foreground">Price: ₹{tx.price}</div>
+                              <div className="text-xs text-muted-foreground">Price: Rs. {tx.price}</div>
                             </td>
                             <td className="px-6 py-4">
                               <div className="flex flex-col gap-1">
                                 <span className="font-medium">{tx.buyer?.name}</span>
                                 {tx.buyerCommissionPaid ? (
-                                  <Badge className="bg-emerald-500 w-fit">Paid</Badge>
+                                  <Badge className="bg-success w-fit">Paid</Badge>
                                 ) : (
-                                  <Badge variant="outline" className="text-amber-600 border-amber-200 w-fit">Pending</Badge>
+                                  <Badge variant="outline" className="text-warning border-warning/20 w-fit">Pending</Badge>
                                 )}
                               </div>
                             </td>
@@ -236,25 +236,25 @@ export default function AdminDashboard() {
                               <div className="flex flex-col gap-1">
                                 <span className="font-medium">{tx.seller?.name}</span>
                                 {tx.sellerCommissionPaid ? (
-                                  <Badge className="bg-emerald-500 w-fit">Paid</Badge>
+                                  <Badge className="bg-success w-fit">Paid</Badge>
                                 ) : (
-                                  <Badge variant="outline" className="text-amber-600 border-amber-200 w-fit">Pending</Badge>
+                                  <Badge variant="outline" className="text-warning border-warning/20 w-fit">Pending</Badge>
                                 )}
                               </div>
                             </td>
                             <td className="px-6 py-4">
-                              <div className="font-bold text-emerald-600">
-                                ₹{(commissionAmount * 2).toFixed(2)}
+                              <div className="font-bold text-success">
+                                Rs. {(commissionAmount * 2).toFixed(2)}
                               </div>
                               <div className="text-xs text-muted-foreground">
-                                (₹{commissionAmount.toFixed(2)} × 2)
+                                (Rs. {commissionAmount.toFixed(2)} × 2)
                               </div>
                             </td>
                             <td className="px-6 py-4">
                               {tx.status === 'commission_paid' || bothPaid ? (
                                 <Button 
                                   size="sm" 
-                                  className="bg-blue-600 hover:bg-blue-700"
+                                  className="bg-info hover:bg-info/90"
                                   onClick={() => handleShareContact(tx._id)}
                                   disabled={sharingLoading === tx._id}
                                 >

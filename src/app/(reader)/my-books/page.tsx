@@ -78,7 +78,7 @@ export default function MyBooksPage() {
       return <Badge variant="destructive">Rejected</Badge>;
     }
     if (book.approvalStatus === 'approved' || book.isApproved) {
-      return <Badge className="bg-emerald-500 hover:bg-emerald-600">Approved</Badge>;
+      return <Badge className="bg-success hover:bg-success/90">Approved</Badge>;
     }
     return <Badge variant="secondary">Pending</Badge>;
   };
@@ -105,28 +105,28 @@ export default function MyBooksPage() {
         </Card>
         <Card>
           <CardContent className="p-6 flex flex-col items-center justify-center text-center">
-            <CheckCircle className="h-8 w-8 text-emerald-500 mb-2" />
+            <CheckCircle className="h-8 w-8 text-success mb-2" />
             <div className="text-2xl font-bold">{stats.approved}</div>
             <div className="text-xs text-muted-foreground">Approved</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-6 flex flex-col items-center justify-center text-center">
-            <Clock className="h-8 w-8 text-amber-500 mb-2" />
+            <Clock className="h-8 w-8 text-warning mb-2" />
             <div className="text-2xl font-bold">{stats.pending}</div>
             <div className="text-xs text-muted-foreground">Pending</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-6 flex flex-col items-center justify-center text-center">
-            <XCircle className="h-8 w-8 text-red-500 mb-2" />
+            <XCircle className="h-8 w-8 text-destructive mb-2" />
             <div className="text-2xl font-bold">{stats.rejected}</div>
             <div className="text-xs text-muted-foreground">Rejected</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-6 flex flex-col items-center justify-center text-center">
-            <Eye className="h-8 w-8 text-blue-500 mb-2" />
+            <Eye className="h-8 w-8 text-info mb-2" />
             <div className="text-2xl font-bold">{stats.views}</div>
             <div className="text-xs text-muted-foreground">Total Views</div>
           </CardContent>
@@ -138,8 +138,8 @@ export default function MyBooksPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {books.map((book) => (
-            <Card key={book._id} className={`overflow-hidden group ${book.approvalStatus === 'rejected' ? 'border-red-300' : ''}`}>
-              <div className="aspect-[2/3] relative bg-gray-100">
+            <Card key={book._id} className={`overflow-hidden group ${book.approvalStatus === 'rejected' ? 'border-destructive/50' : ''}`}>
+              <div className="aspect-[2/3] relative bg-muted">
                 {book.image ? (
                   <img
                     src={book.image}
@@ -147,7 +147,7 @@ export default function MyBooksPage() {
                     className="object-cover w-full h-full"
                   />
                 ) : (
-                  <div className="flex items-center justify-center h-full text-gray-400">
+                  <div className="flex items-center justify-center h-full text-muted-foreground">
                     No Image
                   </div>
                 )}
@@ -163,11 +163,11 @@ export default function MyBooksPage() {
               {/* Show rejection reason if book is rejected */}
               {book.approvalStatus === 'rejected' && book.rejectionReason && (
                 <div className="px-4 pb-2">
-                  <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-md">
-                    <AlertTriangle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
+                  <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-md">
+                    <AlertTriangle className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="text-xs font-medium text-red-700">Rejection Reason:</p>
-                      <p className="text-xs text-red-600">{book.rejectionReason}</p>
+                      <p className="text-xs font-medium text-destructive">Rejection Reason:</p>
+                      <p className="text-xs text-destructive">{book.rejectionReason}</p>
                     </div>
                   </div>
                 </div>

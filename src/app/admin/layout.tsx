@@ -23,7 +23,7 @@ export default function AdminLayout({
       <Navbar />
       <div className="flex flex-1">
         <AppSidebar items={sidebarItems} title="Admin Portal" />
-        <main className="flex-1 p-6 bg-gray-50/30">{children}</main>
+        <main className="flex-1 p-6 bg-muted/30">{children}</main>
       </div>
     </div>
   );

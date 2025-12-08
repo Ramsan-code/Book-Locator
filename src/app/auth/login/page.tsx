@@ -18,7 +18,7 @@ export default function LoginPage() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50/50">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-muted/50">
       <Card className="w-full sm:max-w-md">
         <CardHeader>
           <CardTitle>Welcome Back</CardTitle>
@@ -30,7 +30,7 @@ export default function LoginPage() {
           <LoginForm onSuccess={() => router.push('/')} />
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
-          <div className="text-center text-sm text-gray-500">
+          <div className="text-center text-sm text-muted-foreground">
             Don&apos;t have an account?{" "}
             <Link href="/auth/register" className="text-primary font-medium hover:underline">
               Sign up

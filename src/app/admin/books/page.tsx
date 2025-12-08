@@ -157,7 +157,7 @@ export default function AdminBooksPage() {
         </CardHeader>
         <CardContent>
           {pendingBooks.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground bg-slate-50 rounded-lg border border-dashed">
+            <div className="text-center py-12 text-muted-foreground bg-muted/50 rounded-lg border border-dashed">
               <BookOpen className="h-12 w-12 mx-auto mb-3 opacity-20" />
               <p>No pending books found.</p>
             </div>
@@ -340,9 +340,9 @@ export default function AdminBooksPage() {
                       <Card>
                         <CardContent className="pt-6">
                           <div className="flex items-center gap-2">
-                            <Check className="h-4 w-4 text-green-600" />
+                            <Check className="h-4 w-4 text-success" />
                             <div>
-                              <p className="text-2xl font-bold text-green-600">{ownerDetails.stats?.approvedBooks || 0}</p>
+                              <p className="text-2xl font-bold text-success">{ownerDetails.stats?.approvedBooks || 0}</p>
                               <p className="text-xs text-muted-foreground">Approved</p>
                             </div>
                           </div>
@@ -351,7 +351,7 @@ export default function AdminBooksPage() {
                       <Card>
                         <CardContent className="pt-6">
                           <div className="flex items-center gap-2">
-                            <Star className="h-4 w-4 text-yellow-600" />
+                            <Star className="h-4 w-4 text-warning" />
                             <div>
                               <p className="text-2xl font-bold">{ownerDetails.stats?.averageRating?.toFixed(1) || '0.0'}</p>
                               <p className="text-xs text-muted-foreground">Avg Rating</p>
@@ -362,7 +362,7 @@ export default function AdminBooksPage() {
                       <Card>
                         <CardContent className="pt-6">
                           <div className="flex items-center gap-2">
-                            <TrendingUp className="h-4 w-4 text-blue-600" />
+                            <TrendingUp className="h-4 w-4 text-info" />
                             <div>
                               <p className="text-2xl font-bold">{ownerDetails.stats?.totalSales || 0}</p>
                               <p className="text-xs text-muted-foreground">Sales</p>
@@ -429,7 +429,7 @@ export default function AdminBooksPage() {
                                     {[...Array(5)].map((_, i) => (
                                       <Star
                                         key={i}
-                                        className={`h-3 w-3 ${i < review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+                                        className={`h-3 w-3 ${i < review.rating ? 'fill-warning text-warning' : 'text-muted'}`}
                                       />
                                     ))}
                                   </div>
@@ -479,7 +479,7 @@ export default function AdminBooksPage() {
               <Button
                 onClick={() => selectedBook && handleApprove(selectedBook._id)}
                 disabled={actionLoading === selectedBook?._id}
-                className="bg-emerald-600 hover:bg-emerald-700"
+                className="bg-success hover:bg-success/90"
               >
                 {actionLoading === selectedBook?._id ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-1" />

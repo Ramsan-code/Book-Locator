@@ -352,7 +352,7 @@ export default function BookDetailsPage() {
                       </DialogContent>
                     </Dialog>
                     <Button variant="outline" size="icon" onClick={handleToggleFavorite}>
-                      <Heart className={`h-4 w-4 ${isFavorite ? "fill-red-500 text-red-500" : ""}`} />
+                      <Heart className={`h-4 w-4 ${isFavorite ? "fill-destructive text-destructive" : ""}`} />
                     </Button>
                   </div>
                 </div>
@@ -410,7 +410,7 @@ export default function BookDetailsPage() {
                   </p>
                 </div>
 
-                <Separator className="my-6 bg-emerald-900/30" />
+                <Separator className="my-6 bg-success/30" />
 
                 <div className="mt-auto">
                   {user ? (
@@ -461,7 +461,7 @@ export default function BookDetailsPage() {
                   />
                 ) : (
                   <LoginModal id="review-login-modal">
-                    <Button className="w-full bg-emerald-600 hover:bg-emerald-700">
+                    <Button className="w-full bg-success hover:bg-success/90">
                       Login to Write a Review
                     </Button>
                   </LoginModal>
