@@ -98,7 +98,7 @@ export function Navbar() {
                     suppressHydrationWarning
                   >
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src="/avatars/01.png" alt={user.name} />
+                      <AvatarImage src={user.image} alt={user.name} />
                       <AvatarFallback>{user.name?.charAt(0).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <span className="hidden md:inline-block text-sm font-medium">{user.name}</span>

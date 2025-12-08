@@ -46,13 +46,12 @@ function BooksContent() {
   const [search, setSearch] = React.useState(searchParams.get("search") || "");
   const [userLocation, setUserLocation] = React.useState<{ latitude: number; longitude: number } | null>(null);
   const [isGettingLocation, setIsGettingLocation] = React.useState(false);
+  const [isFetching, setIsFetching] = React.useState(false);
   
   // Filter state
   const [filters, setFilters] = React.useState({
     categories: searchParams.get("categories")?.split(",").filter(Boolean) || [],
     conditions: searchParams.get("conditions")?.split(",").filter(Boolean) || [],
-    minPrice: searchParams.get("minPrice") ? parseFloat(searchParams.get("minPrice")!) : undefined,
-    maxPrice: searchParams.get("maxPrice") ? parseFloat(searchParams.get("maxPrice")!) : undefined,
   });
 
   // Get user location on mount - prioritize stored location over browser geolocation
@@ -86,8 +85,6 @@ function BooksContent() {
     if (search) params.set("search", search);
     if (filters.categories.length) params.set("categories", filters.categories.join(","));
     if (filters.conditions.length) params.set("conditions", filters.conditions.join(","));
-    if (filters.minPrice !== undefined) params.set("minPrice", filters.minPrice.toString());
-    if (filters.maxPrice !== undefined) params.set("maxPrice", filters.maxPrice.toString());
     
     const queryString = params.toString();
     router.replace(queryString ? `/books?${queryString}` : "/books", { scroll: false });
@@ -97,15 +94,15 @@ function BooksContent() {
   React.useEffect(() => {
     const fetchBooks = async () => {
       try {
-        setIsLoading(true);
+        setIsFetching(true);
+        // Only show full loading state on initial load to prevent layout shift
+        if (books.length === 0) setIsLoading(true);
         
         // Build query parameters
         const params = new URLSearchParams();
         if (search) params.append("search", search);
         if (filters.categories.length) params.append("category", filters.categories.join(","));
         if (filters.conditions.length) params.append("condition", filters.conditions.join(","));
-        if (filters.minPrice !== undefined) params.append("minPrice", filters.minPrice.toString());
-        if (filters.maxPrice !== undefined) params.append("maxPrice", filters.maxPrice.toString());
         
         // Fetch only approved and available books from the API
         params.append("available", "true");
@@ -131,6 +128,8 @@ function BooksContent() {
         toast.error("Failed to load books. Please try again.");
         setBooks([]);
         setIsLoading(false);
+      } finally {
+        setIsFetching(false);
       }
     };
 
@@ -141,25 +140,19 @@ function BooksContent() {
     setFilters({
       categories: [],
       conditions: [],
-      minPrice: undefined,
-      maxPrice: undefined,
     });
     setSearch("");
   };
 
   const activeFilterCount = 
     filters.categories.length + 
-    filters.conditions.length + 
-    (filters.minPrice !== undefined ? 1 : 0) + 
-    (filters.maxPrice !== undefined ? 1 : 0);
+    filters.conditions.length;
 
   const removeFilter = (type: string, value?: string) => {
     if (type === "category" && value) {
       setFilters({ ...filters, categories: filters.categories.filter(c => c !== value) });
     } else if (type === "condition" && value) {
       setFilters({ ...filters, conditions: filters.conditions.filter(c => c !== value) });
-    } else if (type === "price") {
-      setFilters({ ...filters, minPrice: undefined, maxPrice: undefined });
     }
   };
 
@@ -231,15 +224,7 @@ function BooksContent() {
                 />
               </Badge>
             ))}
-            {(filters.minPrice !== undefined || filters.maxPrice !== undefined) && (
-              <Badge variant="secondary" className="gap-1">
-                Rs. {filters.minPrice || 0} - {filters.maxPrice || "∞"}
-                <X
-                  className="h-3 w-3 cursor-pointer"
-                  onClick={() => removeFilter("price")}
-                />
-              </Badge>
-            )}
+
             <Button
               variant="ghost"
               size="sm"
@@ -263,18 +248,11 @@ function BooksContent() {
 
       {/* Main Content */}
       <div className="container px-4 pb-16">
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Filters Sidebar */}
-          <div className="lg:w-64 flex-shrink-0">
-            <BookFilters
-              filters={filters}
-              onFiltersChange={setFilters}
-              onClearFilters={handleClearFilters}
-            />
-          </div>
-
-          {/* Books Content */}
-          <div className="flex-1">
+        <BookFilters
+          filters={filters}
+          onFiltersChange={setFilters}
+          onClearFilters={handleClearFilters}
+        />
             {/* Featured Listings */}
             <div className="mb-12">
               <h2 className="text-2xl font-bold mb-6">
@@ -386,6 +364,7 @@ function BooksContent() {
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold">
                   {search ? `Search Results` : activeFilterCount > 0 ? "Filtered Books" : "All Books"}
+                  {isFetching && <Loader2 className="ml-2 h-4 w-4 animate-spin inline-block" />}
                 </h2>
                 {books.length > 0 && (
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -473,8 +452,6 @@ function BooksContent() {
                 </div>
               )}
             </div>
-          </div>
-        </div>
       </div>
     </div>
   );

@@ -2,7 +2,7 @@
 
 import { AuthResponse, LoginCredentials, RegisterData } from "@/types/auth";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://book-locator-api.vercel.app";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 // ----------------------
 // Custom Error Class
@@ -71,10 +71,10 @@ export const authApi = {
       method: "POST",
       body: JSON.stringify(credentials),
     });
-    
+
     // Backend returns user data in 'reader' field
     const reader = response.reader || response;
-    
+
     // Transform backend response to match AuthResponse interface
     return {
       success: true,
@@ -87,7 +87,7 @@ export const authApi = {
         role: reader.role,
         isApproved: reader.isApproved,
         image: reader.image,
-      }
+      },
     } as AuthResponse;
   },
 
@@ -96,10 +96,10 @@ export const authApi = {
       method: "POST",
       body: JSON.stringify(data),
     });
-    
+
     // Backend returns user data in 'reader' field
     const reader = response.reader || response;
-    
+
     // Transform backend response to match AuthResponse interface
     return {
       success: true,
@@ -112,7 +112,7 @@ export const authApi = {
         role: reader.role,
         isApproved: reader.isApproved,
         image: reader.image,
-      }
+      },
     } as AuthResponse;
   },
 
@@ -120,7 +120,7 @@ export const authApi = {
     const response: any = await request("/api/readers/profile", {
       headers: { Authorization: `Bearer ${token}` },
     });
-    
+
     // Transform backend response to match AuthResponse interface
     return {
       success: true,
@@ -137,15 +137,18 @@ export const authApi = {
         city: response.city,
         phone_no: response.phone_no,
         image: response.image,
-      }
+      },
     } as AuthResponse;
   },
 
   logout(token: string) {
-    return request<{ success: boolean; message: string }>("/api/readers/logout", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    return request<{ success: boolean; message: string }>(
+      "/api/readers/logout",
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
   },
 
   createReader(data: any) {
@@ -164,7 +167,7 @@ export const authApi = {
 // ----------------------
 export const adminApi = {
   // Readers
-    getPendingReaders(token: string) {
+  getPendingReaders(token: string) {
     return request<{ success: boolean; data: any[] }>(
       "/api/admin/users/pending",
       { headers: { Authorization: `Bearer ${token}` } }
@@ -172,10 +175,13 @@ export const adminApi = {
   },
 
   getAllReaders(token: string) {
-    return request<{ success: boolean; data: any[]; total: number; page: number; limit: number }>(
-      "/api/admin/users",
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+    return request<{
+      success: boolean;
+      data: any[];
+      total: number;
+      page: number;
+      limit: number;
+    }>("/api/admin/users", { headers: { Authorization: `Bearer ${token}` } });
   },
 
   approveReader(token: string, id: string) {
@@ -216,10 +222,9 @@ export const adminApi = {
 
   // Settings
   getSettings(token: string) {
-    return request<{ success: boolean; data: any[] }>(
-      "/api/admin/settings",
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+    return request<{ success: boolean; data: any[] }>("/api/admin/settings", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
   },
 
   updateSettings(token: string, settings: any[]) {
@@ -235,7 +240,9 @@ export const adminApi = {
 
   // Get public settings (no auth required)
   getPublicSettings() {
-    return request<{ success: boolean; data: any }>("/api/admin/settings/public");
+    return request<{ success: boolean; data: any }>(
+      "/api/admin/settings/public"
+    );
   },
 
   // Books
@@ -265,10 +272,12 @@ export const adminApi = {
   },
 
   getOwnerDetails(token: string, ownerId: string) {
-    return request<{ success: boolean; data: { owner: any; books: any[]; reviews: any[]; stats: any } }>(
-      `/api/admin/books/owner/${ownerId}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+    return request<{
+      success: boolean;
+      data: { owner: any; books: any[]; reviews: any[]; stats: any };
+    }>(`/api/admin/books/owner/${ownerId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
   },
 };
 
@@ -277,7 +286,9 @@ export const adminApi = {
 // ----------------------
 export const booksApi = {
   async getAll(params?: string) {
-    const response: any = await request(`/api/books${params ? `?${params}` : ""}`);
+    const response: any = await request(
+      `/api/books${params ? `?${params}` : ""}`
+    );
     // Backend returns books in 'data' field, transform to 'books' for frontend
     return {
       success: response.success,
@@ -302,11 +313,14 @@ export const booksApi = {
   },
 
   update(token: string, id: string, data: any) {
-    return request<{ success: boolean; message: string; book: any }>(`/api/books/${id}`, {
-      method: "PUT",
-      headers: { Authorization: `Bearer ${token}` },
-      body: JSON.stringify(data),
-    });
+    return request<{ success: boolean; message: string; book: any }>(
+      `/api/books/${id}`,
+      {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+        body: JSON.stringify(data),
+      }
+    );
   },
 
   delete(token: string, id: string) {
@@ -349,34 +363,50 @@ export const transactionsApi = {
   },
 
   getMyRequests(token: string) {
-    return request<{ success: boolean; transactions: any[] }>("/api/transactions/my-transactions", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    return request<{ success: boolean; transactions: any[] }>(
+      "/api/transactions/my-transactions",
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
   },
 
   getIncomingRequests(token: string) {
-    return request<{ success: boolean; transactions: any[] }>("/api/transactions/incoming-requests", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    return request<{ success: boolean; transactions: any[] }>(
+      "/api/transactions/incoming-requests",
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
   },
 
   updateStatus(token: string, id: string, status: string) {
-    return request<{ success: boolean; message: string }>(`/api/transactions/${id}/status`, {
-      method: "PUT",
-      headers: { Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ status }),
-    });
-  },
-
-  payCommission(token: string, id: string, paymentId: string, role: 'buyer' | 'seller') {
-    return request<{ success: boolean; message: string; transaction: any; bothPaid: boolean }>(
-      `/api/transactions/${id}/pay-commission`,
+    return request<{ success: boolean; message: string }>(
+      `/api/transactions/${id}/status`,
       {
-        method: "POST",
+        method: "PUT",
         headers: { Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ paymentId, role }),
+        body: JSON.stringify({ status }),
       }
     );
+  },
+
+  payCommission(
+    token: string,
+    id: string,
+    paymentId: string,
+    role: "buyer" | "seller"
+  ) {
+    return request<{
+      success: boolean;
+      message: string;
+      transaction: any;
+      bothPaid: boolean;
+    }>(`/api/transactions/${id}/pay-commission`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ paymentId, role }),
+    });
   },
 };
 
@@ -391,11 +421,14 @@ export const profileApi = {
   },
 
   updateProfile(token: string, data: any) {
-    return request<{ success: boolean; message: string; user: any }>("/api/readers/profile", {
-      method: "PUT",
-      headers: { Authorization: `Bearer ${token}` },
-      body: JSON.stringify(data),
-    });
+    return request<{ success: boolean; message: string; user: any }>(
+      "/api/readers/profile",
+      {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+        body: JSON.stringify(data),
+      }
+    );
   },
 };
 
@@ -414,16 +447,22 @@ export const searchApi = {
     limit?: number;
   }) {
     const queryParams = new URLSearchParams();
-    if (params.search) queryParams.append('q', params.search);
-    if (params.categories?.length) queryParams.append('categories', params.categories.join(','));
-    if (params.conditions?.length) queryParams.append('conditions', params.conditions.join(','));
-    if (params.minPrice !== undefined) queryParams.append('minPrice', params.minPrice.toString());
-    if (params.maxPrice !== undefined) queryParams.append('maxPrice', params.maxPrice.toString());
-    if (params.sortBy) queryParams.append('sortBy', params.sortBy);
-    if (params.page) queryParams.append('page', params.page.toString());
-    if (params.limit) queryParams.append('limit', params.limit.toString());
-    
-    const response: any = await request(`/api/books/search/advanced?${queryParams.toString()}`);
+    if (params.search) queryParams.append("q", params.search);
+    if (params.categories?.length)
+      queryParams.append("categories", params.categories.join(","));
+    if (params.conditions?.length)
+      queryParams.append("conditions", params.conditions.join(","));
+    if (params.minPrice !== undefined)
+      queryParams.append("minPrice", params.minPrice.toString());
+    if (params.maxPrice !== undefined)
+      queryParams.append("maxPrice", params.maxPrice.toString());
+    if (params.sortBy) queryParams.append("sortBy", params.sortBy);
+    if (params.page) queryParams.append("page", params.page.toString());
+    if (params.limit) queryParams.append("limit", params.limit.toString());
+
+    const response: any = await request(
+      `/api/books/search/advanced?${queryParams.toString()}`
+    );
     return {
       success: response.success,
       books: response.data || response.books || [],
@@ -438,9 +477,11 @@ export const searchApi = {
       lat: lat.toString(),
       lng: lng.toString(),
     });
-    if (maxDistance) params.append('maxDistance', maxDistance.toString());
-    
-    const response: any = await request(`/api/books/search/nearby?${params.toString()}`);
+    if (maxDistance) params.append("maxDistance", maxDistance.toString());
+
+    const response: any = await request(
+      `/api/books/search/nearby?${params.toString()}`
+    );
     return {
       success: response.success,
       books: response.data || response.books || [],
@@ -450,10 +491,12 @@ export const searchApi = {
 
   async featured(page?: number, limit?: number) {
     const params = new URLSearchParams();
-    if (page) params.append('page', page.toString());
-    if (limit) params.append('limit', limit.toString());
-    
-    const response: any = await request(`/api/books/featured${params.toString() ? `?${params.toString()}` : ''}`);
+    if (page) params.append("page", page.toString());
+    if (limit) params.append("limit", limit.toString());
+
+    const response: any = await request(
+      `/api/books/featured${params.toString() ? `?${params.toString()}` : ""}`
+    );
     return {
       success: response.success,
       books: response.data || response.books || [],
@@ -469,22 +512,34 @@ export const searchApi = {
 // ----------------------
 export const reviewsApi = {
   getByBook(bookId: string) {
-    return request<{ success: boolean; reviews: any[] }>(`/api/reviews/${bookId}`);
+    return request<{ success: boolean; reviews: any[] }>(
+      `/api/reviews/${bookId}`
+    );
   },
 
-  create(token: string, bookId: string, data: { rating: number; comment: string }) {
-    return request<{ success: boolean; message: string; review: any }>(`/api/reviews/${bookId}`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: JSON.stringify(data),
-    });
+  create(
+    token: string,
+    bookId: string,
+    data: { rating: number; comment: string }
+  ) {
+    return request<{ success: boolean; message: string; review: any }>(
+      `/api/reviews/${bookId}`,
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: JSON.stringify(data),
+      }
+    );
   },
 
   delete(token: string, reviewId: string) {
-    return request<{ success: boolean; message: string }>(`/api/reviews/${reviewId}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    return request<{ success: boolean; message: string }>(
+      `/api/reviews/${reviewId}`,
+      {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
   },
 
   // Get owner statistics (average rating from all their books' reviews)
@@ -493,31 +548,34 @@ export const reviewsApi = {
       // Fetch all books by this owner
       const booksResponse: any = await request(`/api/books?owner=${ownerId}`);
       const ownerBooks = booksResponse.data || [];
-      
+
       if (ownerBooks.length === 0) {
         return { success: true, averageRating: 0, reviewCount: 0 };
       }
-      
+
       // Fetch reviews for all owner's books
       let totalRating = 0;
       let totalReviews = 0;
-      
+
       for (const book of ownerBooks) {
         try {
           const reviewsResponse = await reviewsApi.getByBook(book._id);
           if (reviewsResponse.success && reviewsResponse.reviews) {
             const bookReviews = reviewsResponse.reviews;
             totalReviews += bookReviews.length;
-            totalRating += bookReviews.reduce((sum: number, review: any) => sum + review.rating, 0);
+            totalRating += bookReviews.reduce(
+              (sum: number, review: any) => sum + review.rating,
+              0
+            );
           }
         } catch (error) {
           // Skip if reviews fetch fails for a book
           continue;
         }
       }
-      
+
       const averageRating = totalReviews > 0 ? totalRating / totalReviews : 0;
-      
+
       return {
         success: true,
         averageRating: Math.round(averageRating * 10) / 10, // Round to 1 decimal

@@ -16,8 +16,6 @@ interface BookFiltersProps {
   filters: {
     categories: string[];
     conditions: string[];
-    minPrice?: number;
-    maxPrice?: number;
   };
   onFiltersChange: (filters: any) => void;
   onClearFilters: () => void;
@@ -42,14 +40,10 @@ const CONDITIONS = ["New", "Good", "Used"];
 
 export function BookFilters({ filters, onFiltersChange, onClearFilters }: BookFiltersProps) {
   const [isOpen, setIsOpen] = React.useState(false);
-  const [localMinPrice, setLocalMinPrice] = React.useState(filters.minPrice?.toString() || "");
-  const [localMaxPrice, setLocalMaxPrice] = React.useState(filters.maxPrice?.toString() || "");
 
   const activeFilterCount = 
     filters.categories.length + 
-    filters.conditions.length + 
-    (filters.minPrice !== undefined ? 1 : 0) + 
-    (filters.maxPrice !== undefined ? 1 : 0);
+    filters.conditions.length;
 
   const toggleCategory = (category: string) => {
     const newCategories = filters.categories.includes(category)
@@ -65,23 +59,7 @@ export function BookFilters({ filters, onFiltersChange, onClearFilters }: BookFi
     onFiltersChange({ ...filters, conditions: newConditions });
   };
 
-  const applyPriceFilter = () => {
-    onFiltersChange({
-      ...filters,
-      minPrice: localMinPrice ? parseFloat(localMinPrice) : undefined,
-      maxPrice: localMaxPrice ? parseFloat(localMaxPrice) : undefined,
-    });
-  };
 
-  const clearPriceFilter = () => {
-    setLocalMinPrice("");
-    setLocalMaxPrice("");
-    onFiltersChange({
-      ...filters,
-      minPrice: undefined,
-      maxPrice: undefined,
-    });
-  };
 
   const FilterContent = () => (
     <div className="space-y-6">
@@ -145,62 +123,7 @@ export function BookFilters({ filters, onFiltersChange, onClearFilters }: BookFi
 
       <Separator />
 
-      {/* Price Range Filter */}
-      <div>
-        <h3 className="font-semibold mb-3 flex items-center justify-between">
-          Price Range (Rs.)
-          {(filters.minPrice !== undefined || filters.maxPrice !== undefined) && (
-            <Badge variant="secondary" className="ml-2">1</Badge>
-          )}
-        </h3>
-        <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className="text-xs text-muted-foreground mb-1 block">Min</label>
-              <input
-                type="number"
-                placeholder="0"
-                value={localMinPrice}
-                onChange={(e) => setLocalMinPrice(e.target.value)}
-                className="w-full px-3 py-2 border rounded-md text-sm"
-                min="0"
-              />
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground mb-1 block">Max</label>
-              <input
-                type="number"
-                placeholder="10000"
-                value={localMaxPrice}
-                onChange={(e) => setLocalMaxPrice(e.target.value)}
-                className="w-full px-3 py-2 border rounded-md text-sm"
-                min="0"
-              />
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              size="sm"
-              onClick={applyPriceFilter}
-              className="flex-1"
-              disabled={!localMinPrice && !localMaxPrice}
-            >
-              Apply
-            </Button>
-            {(filters.minPrice !== undefined || filters.maxPrice !== undefined) && (
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={clearPriceFilter}
-              >
-                Clear
-              </Button>
-            )}
-          </div>
-        </div>
-      </div>
+
 
       {/* Clear All Filters */}
       {activeFilterCount > 0 && (
@@ -239,22 +162,7 @@ export function BookFilters({ filters, onFiltersChange, onClearFilters }: BookFi
         </Button>
       </div>
 
-      {/* Desktop Sidebar */}
-      <div className="hidden lg:block">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              Filters
-              {activeFilterCount > 0 && (
-                <Badge variant="secondary">{activeFilterCount}</Badge>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <FilterContent />
-          </CardContent>
-        </Card>
-      </div>
+
 
       {/* Mobile Drawer */}
       {isOpen && (
