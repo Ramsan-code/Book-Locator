@@ -136,6 +136,16 @@ export const adminService = {
     return response.data;
   },
 
+  async deleteBook(
+    token: string,
+    id: string
+  ): Promise<{ success: boolean; message: string }> {
+    const response = await apiClient.delete(`/api/admin/books/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
+
   async getOwnerDetails(
     token: string,
     ownerId: string

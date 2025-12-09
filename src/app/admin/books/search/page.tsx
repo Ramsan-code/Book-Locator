@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Search, Loader2, X, MapPin } from "lucide-react";
+import { Search, Loader2, X, MapPin, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,8 +13,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { bookService } from "@/services";
+import { bookService, adminService } from "@/services";
 import { toast } from "sonner";
 import { BookFilters } from "@/components/books/BookFilters";
 import { useAuth } from "@/contexts/AuthContext";
@@ -39,9 +47,11 @@ const CATEGORIES = [
 function AdminBookSearchContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user } = useAuth(); // Get logged-in admin user
+  const { user, token } = useAuth(); // Get logged-in admin user
   
   const [books, setBooks] = React.useState<any[]>([]);
+  const [bookToDelete, setBookToDelete] = React.useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(true);
   const [search, setSearch] = React.useState(searchParams.get("search") || "");
   const [userLocation, setUserLocation] = React.useState<{ latitude: number; longitude: number } | null>(null);
@@ -163,6 +173,31 @@ function AdminBookSearchContent() {
 
   const featuredBooks = books.slice(0, 4);
   const newArrivals = books.slice(4, 8);
+
+  const handleDeleteClick = (e: React.MouseEvent, bookId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setBookToDelete(bookId);
+  };
+
+  const confirmDelete = async () => {
+    if (!bookToDelete || !token) return;
+    
+    try {
+      setIsDeleting(true);
+      await adminService.deleteBook(token, bookToDelete);
+      toast.success("Book deleted successfully");
+      
+      // Remove book from local state
+      setBooks(books.filter(b => b._id !== bookToDelete));
+      setBookToDelete(null);
+    } catch (error) {
+      toast.error("Failed to delete book");
+      console.error(error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -303,7 +338,17 @@ function AdminBookSearchContent() {
                             <p className="text-sm text-muted-foreground">{book.author}</p>
                           </CardHeader>
                           <CardFooter className="p-4 pt-0">
-                            <span className="font-bold text-lg">Rs. {book.price}</span>
+                            <div className="flex items-center justify-between w-full">
+                              <span className="font-bold text-lg">Rs. {book.price}</span>
+                              <Button
+                                variant="destructive"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={(e) => handleDeleteClick(e, book._id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </CardFooter>
                         </Card>
                       </Link>
@@ -352,7 +397,17 @@ function AdminBookSearchContent() {
                             <p className="text-sm text-muted-foreground">{book.author}</p>
                           </CardHeader>
                           <CardFooter className="p-4 pt-0">
-                            <span className="font-bold text-lg">Rs. {book.price}</span>
+                            <div className="flex items-center justify-between w-full">
+                              <span className="font-bold text-lg">Rs. {book.price}</span>
+                              <Button
+                                variant="destructive"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={(e) => handleDeleteClick(e, book._id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </CardFooter>
                         </Card>
                       </Link>
@@ -456,6 +511,15 @@ function AdminBookSearchContent() {
                                  </span>
                               </div>
                             </div>
+                            
+                            <Button
+                              variant="destructive"
+                              size="icon"
+                              className="h-8 w-8 self-center mr-4"
+                              onClick={(e) => handleDeleteClick(e, book._id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </div>
                         </CardContent>
                       </Card>
@@ -467,6 +531,26 @@ function AdminBookSearchContent() {
           </div>
         </div>
       </div>
+
+      <Dialog open={!!bookToDelete} onOpenChange={(open) => !open && setBookToDelete(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Are you sure?</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete the book from the system.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setBookToDelete(null)} disabled={isDeleting}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
+              {isDeleting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
