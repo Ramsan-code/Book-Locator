@@ -54,4 +54,17 @@ export const transactionService = {
     );
     return response.data;
   },
+
+  async createPaymentIntent(
+    token: string,
+    id: string,
+    role: "buyer" | "seller"
+  ): Promise<{ clientSecret: string }> {
+    const response = await apiClient.post(
+      `/api/transactions/${id}/payment-intent`,
+      { role },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data;
+  },
 };
