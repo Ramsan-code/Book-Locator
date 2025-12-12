@@ -1,7 +1,7 @@
 export function Footer() {
   return (
     <footer className="border-t bg-muted">
-      <div className="container py-8 px-4">
+      <div className="container py-8 max-w-7xl">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <h3 className="font-bold text-lg mb-4">BookLocator</h3>
