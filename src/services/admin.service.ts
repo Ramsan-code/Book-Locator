@@ -158,4 +158,16 @@ export const adminService = {
     });
     return response.data;
   },
+
+  async toggleFeaturedBook(
+    token: string,
+    id: string
+  ): Promise<{ success: boolean; message: string; data: any }> {
+    const response = await apiClient.put(
+      `/api/admin/books/${id}/toggle-featured`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data;
+  },
 };

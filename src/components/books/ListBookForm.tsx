@@ -20,6 +20,14 @@ const CATEGORIES = [
   "Non-fiction",
   "Education",
   "Comics",
+  "Sci-Fi",
+  "Mystery",
+  "Fantasy",
+  "Romance",
+  "Thriller",
+  "Biography",
+  "Self-Help",
+  "History",
   "Other",
 ];
 
@@ -27,6 +35,9 @@ const CONDITIONS = [
   { value: "New", label: "New - Like new condition" },
   { value: "Good", label: "Good - Some wear, fully readable" },
   { value: "Used", label: "Used - Noticeable wear but usable" },
+  { value: "Bad", label: "Bad -unreadable or damaged" },
+  { value: "Damaged", label: "Damaged -unreadable or damaged" },
+  { value: "Other", label: "Other - Specify in description" },
 ];
 
 export function ListBookForm() {
@@ -178,7 +189,7 @@ export function ListBookForm() {
         // Prepend API URL if path is relative
         const imageUrl = response.image.startsWith("http") 
           ? response.image 
-          : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}${response.image}`;
+          : `${process.env.NEXT_PUBLIC_API_URL }${response.image}`;
           
         setFormData(prev => ({ ...prev, image: imageUrl }));
         toast.success("Image uploaded successfully");

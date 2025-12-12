@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Search, Loader2, X, MapPin, Trash2 } from "lucide-react";
+import { Search, Loader2, X, MapPin, Trash2, Star } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -52,6 +52,7 @@ function AdminBookSearchContent() {
   const [books, setBooks] = React.useState<any[]>([]);
   const [bookToDelete, setBookToDelete] = React.useState<string | null>(null);
   const [isDeleting, setIsDeleting] = React.useState(false);
+  const [togglingFeatured, setTogglingFeatured] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
   const [search, setSearch] = React.useState(searchParams.get("search") || "");
   const [userLocation, setUserLocation] = React.useState<{ latitude: number; longitude: number } | null>(null);
@@ -196,6 +197,30 @@ function AdminBookSearchContent() {
       console.error(error);
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const handleToggleFeatured = async (e: React.MouseEvent, bookId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!token) return;
+    
+    try {
+      setTogglingFeatured(bookId);
+      const response = await adminService.toggleFeaturedBook(token, bookId);
+      
+      if (response.success) {
+        // Update local state
+        setBooks(books.map(b => 
+          b._id === bookId ? { ...b, isFeatured: !b.isFeatured } : b
+        ));
+        toast.success(response.data?.isFeatured ? "Book marked as featured" : "Book removed from featured");
+      }
+    } catch (error) {
+      toast.error("Failed to toggle featured status");
+      console.error(error);
+    } finally {
+      setTogglingFeatured(null);
     }
   };
 
@@ -500,6 +525,11 @@ function AdminBookSearchContent() {
                                      {book.available ? "Available" : "Unavailable"}
                                    </Badge>
                                  )}
+                                 {book.isFeatured && (
+                                   <Badge variant="default" className="bg-warning text-warning-foreground">
+                                     Featured
+                                   </Badge>
+                                 )}
                                  {book.distance !== undefined && (
                                    <span className="flex items-center gap-1 text-muted-foreground">
                                      <MapPin className="h-3 w-3" />
@@ -512,14 +542,30 @@ function AdminBookSearchContent() {
                               </div>
                             </div>
                             
-                            <Button
-                              variant="destructive"
-                              size="icon"
-                              className="h-8 w-8 self-center mr-4"
-                              onClick={(e) => handleDeleteClick(e, book._id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                            <div className="flex items-center gap-2 self-center mr-4">
+                              <Button
+                                variant={book.isFeatured ? "default" : "outline"}
+                                size="icon"
+                                className={`h-8 w-8 ${book.isFeatured ? 'bg-warning hover:bg-warning/90 text-warning-foreground' : ''}`}
+                                onClick={(e) => handleToggleFeatured(e, book._id)}
+                                disabled={togglingFeatured === book._id}
+                                title={book.isFeatured ? "Remove from featured" : "Mark as featured"}
+                              >
+                                {togglingFeatured === book._id ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Star className={`h-4 w-4 ${book.isFeatured ? 'fill-current' : ''}`} />
+                                )}
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={(e) => handleDeleteClick(e, book._id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </div>
                         </CardContent>
                       </Card>
