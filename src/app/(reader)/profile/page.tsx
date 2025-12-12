@@ -34,7 +34,7 @@ import { toast } from "sonner";
 import { reviewService, profileService, bookService } from "@/services";
 
 export default function ProfilePage() {
-  const { user, logout, isLoading: authLoading } = useAuth();
+  const { user, logout, checkAuth, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [isUploading, setIsUploading] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
@@ -133,6 +133,7 @@ export default function ProfilePage() {
         const updateRes = await profileService.updateProfile(token, { image: res.image });
         if (updateRes.success) {
           toast.success("Profile picture updated successfully!");
+          await checkAuth(); // Refresh global user state
         } else {
           toast.success("Image uploaded - please save to apply changes");
         }
@@ -158,12 +159,40 @@ export default function ProfilePage() {
       const updateRes = await profileService.updateProfile(token, { image: "" });
       if (updateRes.success) {
         toast.success("Profile picture removed!");
+        await checkAuth(); // Refresh global user state
       } else {
         toast.error("Failed to remove picture");
       }
     } catch (error) {
       console.error("Remove image failed:", error);
       toast.error("Failed to remove picture");
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    if (!user) return;
+
+    // Only save if changes were made
+    if (email === (user.email || "") && phone === (user.phone_no || "")) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("booklink_token") || "";
+      const updateRes = await profileService.updateProfile(token, {
+        email,
+        phone_no: phone,
+      });
+
+      if (updateRes.success) {
+        toast.success("Profile updated successfully!");
+        await checkAuth(); // Refresh global user state
+      } else {
+        toast.error("Failed to update profile");
+      }
+    } catch (error) {
+      console.error("Profile update failed:", error);
+      toast.error("Failed to update profile");
     }
   };
 
@@ -264,7 +293,6 @@ export default function ProfilePage() {
               Manage your personal details and public profile.
             </p>
           </div>
-
         </div>
 
         {/* Profile Details Card */}
@@ -410,30 +438,7 @@ export default function ProfilePage() {
               </Button>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your.email@example.com"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+1 (555) 000-0000"
-                />
-              </div>
-            </div>
-          </CardContent>
+
         </Card>
 
         {/* Danger Zone */}
