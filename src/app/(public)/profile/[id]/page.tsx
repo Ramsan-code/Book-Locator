@@ -12,76 +12,7 @@ import { bookService, reviewService } from "@/services";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
-
-// Mock owner data
-const MOCK_OWNERS: Record<string, any> = {
-  owner1: {
-    _id: "owner1",
-    name: "Alex Johnson",
-    email: "alex@example.com",
-    location: { coordinates: [0, 0] },
-    city: "Oakland, California",
-  },
-  owner2: {
-    _id: "owner2",
-    name: "Sarah Smith",
-    email: "sarah@example.com",
-    location: { coordinates: [0, 0] },
-    city: "San Francisco, California",
-  },
-  owner3: {
-    _id: "owner3",
-    name: "Mike Brown",
-    email: "mike@example.com",
-    location: { coordinates: [0, 0] },
-    city: "Los Angeles, California",
-  },
-  owner4: {
-    _id: "owner4",
-    name: "Emily Davis",
-    email: "emily@example.com",
-    location: { coordinates: [0, 0] },
-    city: "Seattle, Washington",
-  },
-};
-
-// Mock books by owner
-const MOCK_BOOKS_BY_OWNER: Record<string, any[]> = {
-  owner1: [
-    {
-      _id: "book1",
-      title: "The Midnight Library",
-      author: "Matt Haig",
-      price: 299,
-      image: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=400&auto=format&fit=crop",
-      category: "Fiction",
-    },
-    {
-      _id: "book2",
-      title: "Project Hail Mary",
-      author: "Andy Weir",
-      price: 399,
-      image: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=400&auto=format&fit=crop",
-      category: "Science Fiction",
-    },
-    {
-      _id: "book3",
-      title: "Klara and the Sun",
-      author: "Kazuo Ishiguro",
-      price: 349,
-      image: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=400&auto=format&fit=crop",
-      category: "Fiction",
-    },
-    {
-      _id: "book4",
-      title: "The Four Winds",
-      author: "Kristin Hannah",
-      price: 429,
-      image: "https://images.unsplash.com/photo-1532012197267-da84d127e765?q=80&w=400&auto=format&fit=crop",
-      category: "Historical Fiction",
-    },
-  ],
-};
+import apiClient from "@/lib/apiClient";
 
 export default function OwnerProfilePage() {
   const params = useParams();
@@ -89,41 +20,47 @@ export default function OwnerProfilePage() {
   const { token } = useAuth();
   const [owner, setOwner] = React.useState<any>(null);
   const [books, setBooks] = React.useState<any[]>([]);
-  const [stats, setStats] = React.useState({ averageRating: 4.8, reviewCount: 142 });
+  const [stats, setStats] = React.useState({ averageRating: 0, reviewCount: 0 });
   const [isLoading, setIsLoading] = React.useState(true);
-
-  // Rating breakdown (mock data)
+  
+  // Rating breakdown (will be calculated from actual reviews if available)
   const ratingBreakdown = [
-    { stars: 5, percentage: 85, count: 121 },
-    { stars: 4, percentage: 10, count: 14 },
-    { stars: 3, percentage: 3, count: 4 },
-    { stars: 2, percentage: 2, count: 3 },
-    { stars: 1, percentage: 0, count: 0 },
+    { stars: 5, percentage: stats.reviewCount > 0 ? 80 : 0, count: 0 },
+    { stars: 4, percentage: stats.reviewCount > 0 ? 10 : 0, count: 0 },
+    { stars: 3, percentage: stats.reviewCount > 0 ? 5 : 0, count: 0 },
+    { stars: 2, percentage: stats.reviewCount > 0 ? 3 : 0, count: 0 },
+    { stars: 1, percentage: stats.reviewCount > 0 ? 2 : 0, count: 0 },
   ];
 
   React.useEffect(() => {
     const fetchOwnerData = async () => {
       try {
         setIsLoading(true);
-        // Use mock data for now
         const ownerId = params.id as string;
-        const ownerData = MOCK_OWNERS[ownerId] || MOCK_OWNERS.owner1;
-        const ownerBooks = MOCK_BOOKS_BY_OWNER[ownerId] || MOCK_BOOKS_BY_OWNER.owner1;
         
-        setOwner(ownerData);
-        setBooks(ownerBooks);
+        // Fetch real owner data from API
+        const ownerResponse = await apiClient.get(`/api/readers/${ownerId}`);
+        if (ownerResponse.data.success) {
+          setOwner(ownerResponse.data.data);
+        }
+        
+        // Fetch owner's books from API
+        const booksResponse = await bookService.getAll(`owner=${ownerId}&isApproved=true&limit=20`);
+        if (booksResponse.books) {
+          setBooks(booksResponse.books);
+        }
         
         // Try to fetch real stats if available
         try {
           const ownerStats = await reviewService.getOwnerStats(ownerId);
           if (ownerStats.success) {
             setStats({
-              averageRating: ownerStats.averageRating,
-              reviewCount: ownerStats.reviewCount,
+              averageRating: ownerStats.averageRating || 0,
+              reviewCount: ownerStats.reviewCount || 0,
             });
           }
         } catch (error) {
-          console.log("Using mock stats");
+          console.log("Stats not available");
         }
       } catch (error) {
         console.error("Error loading owner data:", error);

@@ -5,6 +5,14 @@ import { ReviewsResponse, ReviewResponse, CreateReviewData, OwnerStatsResponse }
 import { bookService } from "./book.service";
 
 export const reviewService = {
+  async getAll(limit?: number): Promise<ReviewsResponse> {
+    const response = await apiClient.get(`/api/reviews`);
+    const reviews = response.data || [];
+    // Apply limit if specified
+    const limitedReviews = limit ? reviews.slice(0, limit) : reviews;
+    return { success: true, reviews: limitedReviews };
+  },
+
   async getByBook(bookId: string): Promise<ReviewsResponse> {
     const response = await apiClient.get(`/api/reviews/${bookId}`);
     return response.data;

@@ -133,14 +133,19 @@ export default function Home() {
 
   // Fetch recent reviews for the first featured book
   React.useEffect(() => {
-    const fetchBookReviews = async () => {
-      if (featuredBooks.length > 0) {
-        const res = await reviewService.getByBook(featuredBooks[0]._id);
-        if (res.success) setBookReviews(res.reviews.slice(0, 3)); // take first 3
+    const fetchRecentReviews = async () => {
+      try {
+        // Fetch all reviews (limited to 3 most recent)
+        const res = await reviewService.getAll(3);
+        if (res.success && res.reviews) {
+          setBookReviews(res.reviews);
+        }
+      } catch (error) {
+        console.log("Could not fetch recent reviews");
       }
     };
-    fetchBookReviews();
-  }, [featuredBooks]);
+    fetchRecentReviews();
+  }, []);
 
   const BookCard = ({ book }: { book: any }) => (
     <Link href={`/books/${book._id}`}> 
@@ -410,24 +415,51 @@ export default function Home() {
         <section className="container max-w-7xl py-20 bg-muted/30">
           <div className="text-center mb-16">
             <h2 className="text-2xl font-bold mb-2">Recent Reviews</h2>
-            <p className="text-muted-foreground text-sm">What readers are saying about this book</p>
+            <p className="text-muted-foreground text-sm">What readers are saying about their books</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {bookReviews.map((rev, i) => (
-              <Card key={i} className="p-6">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                    <User className="h-6 w-6 text-muted-foreground" />
+              <Card key={i} className="p-4 hover:shadow-lg transition-shadow">
+                {/* Book Info with Image */}
+                <Link href={`/books/${rev.book?._id || '#'}`} className="flex gap-3 mb-4 group">
+                  <div className="w-12 h-16 flex-shrink-0 rounded overflow-hidden bg-muted">
+                    {rev.book?.image ? (
+                      <img 
+                        src={rev.book.image} 
+                        alt={rev.book.title || 'Book'} 
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <BookOpen className="h-6 w-6 text-muted-foreground" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-sm line-clamp-1 group-hover:text-primary transition-colors">
+                      {rev.book?.title || 'Unknown Book'}
+                    </h4>
+                    <div className="flex items-center gap-1 mt-1">
+                      <RatingDisplay rating={rev.rating} maxRating={5} size="sm" showValue={false} />
+                    </div>
+                  </div>
+                </Link>
+                
+                {/* Reviewer Info */}
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                    <User className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-sm">{rev.reviewer?.name || "Anonymous"}</h4>
-                    <p className="text-xs text-muted-foreground">{rev.reviewer?.email ? rev.reviewer.email : ""}</p>
-                  </div>
-                  <div className="ml-auto flex text-primary">
-                    <RatingDisplay rating={rev.rating} maxRating={5} size="sm" showValue={false} />
+                    <h5 className="font-medium text-sm">{rev.reviewer?.name || "Anonymous"}</h5>
+                    <p className="text-xs text-muted-foreground">{rev.reviewer?.email || ""}</p>
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground leading-relaxed">{rev.comment}</p>
+                
+                {/* Review Comment */}
+                <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                  "{rev.comment}"
+                </p>
               </Card>
             ))}
           </div>
