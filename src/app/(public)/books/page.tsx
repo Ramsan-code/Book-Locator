@@ -3,7 +3,8 @@
 import * as React from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Search, MapPin, Loader2, X } from "lucide-react";
+import { Search, MapPin, Loader2, X, Heart } from "lucide-react";
+import { useFavorites } from "@/hooks/useFavorites";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,6 +41,7 @@ function BooksContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth(); // Get logged-in user
+  const { isFavorite, toggleFavorite } = useFavorites();
   
   const [books, setBooks] = React.useState<any[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -281,6 +283,14 @@ function BooksContent() {
                               No Image
                             </div>
                           )}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="absolute top-2 left-2 bg-background/80 hover:bg-background/90 rounded-full h-8 w-8 z-10"
+                            onClick={(e) => toggleFavorite(book._id, e)}
+                          >
+                            <Heart className={`h-4 w-4 ${isFavorite(book._id) ? "fill-destructive text-destructive" : ""}`} />
+                          </Button>
                           {book.distance !== undefined && (
                             <Badge className="absolute top-2 right-2 bg-primary/90">
                               <MapPin className="h-3 w-3 mr-1" />
@@ -420,12 +430,24 @@ function BooksContent() {
 
                             {/* Book Details */}
                             <div className="flex-1 min-w-0">
-                              <h3 className="font-semibold text-lg mb-1 line-clamp-1">
-                                {book.title}
-                              </h3>
-                              <p className="text-sm text-muted-foreground mb-3">
-                                {book.author}
-                              </p>
+                              <div className="flex justify-between items-start">
+                                <div>
+                                  <h3 className="font-semibold text-lg mb-1 line-clamp-1">
+                                    {book.title}
+                                  </h3>
+                                  <p className="text-sm text-muted-foreground mb-3">
+                                    {book.author}
+                                  </p>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  onClick={(e) => toggleFavorite(book._id, e)}
+                                >
+                                  <Heart className={`h-4 w-4 ${isFavorite(book._id) ? "fill-destructive text-destructive" : ""}`} />
+                                </Button>
+                              </div>
                               
                               <div className="flex flex-wrap items-center gap-3 text-sm">
                                 {book.condition && (

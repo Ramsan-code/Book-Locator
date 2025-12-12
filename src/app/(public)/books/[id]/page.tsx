@@ -26,6 +26,7 @@ import { ReviewList } from "@/components/reviews/ReviewList";
 import { ReviewForm } from "@/components/reviews/ReviewForm";
 import { OwnerProfile } from "@/components/books/OwnerProfile";
 import { BottomNav } from "@/components/layout/BottomNav";
+import { useFavorites } from "@/hooks/useFavorites";
 
 export default function BookDetailsPage() {
   const params = useParams();
@@ -38,7 +39,7 @@ export default function BookDetailsPage() {
   const [isSubmittingReview, setIsSubmittingReview] = React.useState(false);
   const [ownerStats, setOwnerStats] = React.useState<{ averageRating: number; reviewCount: number }>({ averageRating: 0, reviewCount: 0 });
   const [distance, setDistance] = React.useState<number | null>(null);
-  const [isFavorite, setIsFavorite] = React.useState(false);
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   React.useEffect(() => {
     const fetchBook = async () => {
@@ -131,13 +132,7 @@ export default function BookDetailsPage() {
     if (params.id) fetchBook();
   }, [params.id]);
 
-  // Check if book is in favorites
-  React.useEffect(() => {
-    if (params.id) {
-      const favorites = JSON.parse(localStorage.getItem("book-locator-favorites") || "[]");
-      setIsFavorite(favorites.includes(params.id));
-    }
-  }, [params.id]);
+
 
   // Fetch reviews
   React.useEffect(() => {
@@ -233,22 +228,7 @@ export default function BookDetailsPage() {
     }
   };
 
-  const handleToggleFavorite = () => {
-    const favorites = JSON.parse(localStorage.getItem("book-locator-favorites") || "[]");
-    const bookId = params.id as string;
-    
-    if (isFavorite) {
-      const newFavorites = favorites.filter((id: string) => id !== bookId);
-      localStorage.setItem("book-locator-favorites", JSON.stringify(newFavorites));
-      setIsFavorite(false);
-      toast.success("Removed from favorites");
-    } else {
-      favorites.push(bookId);
-      localStorage.setItem("book-locator-favorites", JSON.stringify(favorites));
-      setIsFavorite(true);
-      toast.success("Added to favorites");
-    }
-  };
+
 
   if (isLoading) return <div className="container py-8">Loading...</div>;
   if (!book) return <div className="container py-8">Book not found</div>;
@@ -351,8 +331,8 @@ export default function BookDetailsPage() {
                         </div>
                       </DialogContent>
                     </Dialog>
-                    <Button variant="outline" size="icon" onClick={handleToggleFavorite}>
-                      <Heart className={`h-4 w-4 ${isFavorite ? "fill-destructive text-destructive" : ""}`} />
+                    <Button variant="outline" size="icon" onClick={(e) => toggleFavorite(params.id as string, e)}>
+                      <Heart className={`h-4 w-4 ${isFavorite(params.id as string) ? "fill-destructive text-destructive" : ""}`} />
                     </Button>
                   </div>
                 </div>
