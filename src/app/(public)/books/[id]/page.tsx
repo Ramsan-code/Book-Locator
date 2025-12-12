@@ -389,8 +389,8 @@ export default function BookDetailsPage() {
                   ${book.price}
                 </div>
 
-                {/* Owner Profile Section */}
-                {book.owner && (
+                {/* Owner Profile Section - Only show if user is NOT the owner */}
+                {book.owner && user?._id !== book.owner._id && (
                   <div className="mb-6">
                     <h3 className="text-sm font-semibold mb-3">Owner</h3>
                     <OwnerProfile
@@ -418,6 +418,12 @@ export default function BookDetailsPage() {
                       <div className="border rounded-lg p-4">
                         <p className="text-sm text-muted-foreground text-center">
                           <strong>Admin View:</strong> You can browse books but cannot make purchase requests.
+                        </p>
+                      </div>
+                    ) : user._id === book.owner?._id ? (
+                      <div className="border rounded-lg p-4 bg-muted/50">
+                        <p className="text-sm text-muted-foreground text-center">
+                          <strong>You own this book</strong>
                         </p>
                       </div>
                     ) : (
@@ -453,10 +459,18 @@ export default function BookDetailsPage() {
               </div>
               <div>
                 {user ? (
-                  <ReviewForm
-                    onSubmit={handleSubmitReview}
-                    isSubmitting={isSubmittingReview}
-                  />
+                  user._id !== book.owner?._id ? (
+                    <ReviewForm
+                      onSubmit={handleSubmitReview}
+                      isSubmitting={isSubmittingReview}
+                    />
+                  ) : (
+                    <div className="p-6 border rounded-lg bg-muted/30 text-center">
+                      <p className="text-muted-foreground">
+                        You cannot review your own book.
+                      </p>
+                    </div>
+                  )
                 ) : (
                   <Button className="w-full bg-success hover:bg-success/90" asChild>
                     <Link href="/auth/login">Login to Write a Review</Link>

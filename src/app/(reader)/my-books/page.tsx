@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Plus, Edit, Trash2, BookOpen, Clock, CheckCircle, Eye, XCircle, AlertTriangle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Plus, BookOpen, Clock, CheckCircle, Eye, XCircle, AlertTriangle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,6 +19,7 @@ import { toast } from "sonner";
 
 export default function MyBooksPage() {
   const { user, token } = useAuth();
+  const router = useRouter();
   const [books, setBooks] = React.useState<any[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
 
@@ -86,7 +88,7 @@ export default function MyBooksPage() {
     <div className="container max-w-7xl py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold tracking-tight">My Books</h1>
-        <Link href="/books/create">
+        <Link href="/list-book">
           <Button>
             <Plus className="h-4 w-4 mr-2" /> List New Book
           </Button>
@@ -133,7 +135,20 @@ export default function MyBooksPage() {
       </div>
 
       {isLoading ? (
-        <div>Loading...</div>
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      ) : books.length === 0 ? (
+        <div className="text-center py-12">
+          <BookOpen className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+          <h3 className="text-lg font-semibold mb-2">No books yet</h3>
+          <p className="text-muted-foreground mb-4">Start by listing your first book!</p>
+          <Button asChild>
+            <Link href="/list-book">
+              <Plus className="h-4 w-4 mr-2" /> List New Book
+            </Link>
+          </Button>
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {books.map((book) => (
@@ -173,12 +188,11 @@ export default function MyBooksPage() {
               )}
               
               <CardFooter className="p-4 pt-0 flex justify-between gap-2">
-                <Button variant="outline" size="sm" className="flex-1">
-                  <Edit className="h-4 w-4 mr-2" /> Edit
-                </Button>
-                <Button variant="destructive" size="sm" className="flex-1">
-                  <Trash2 className="h-4 w-4 mr-2" /> Delete
-                </Button>
+                <Link href={`/books/${book._id}`} className="w-full">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <Eye className="h-4 w-4 mr-2" /> View Details
+                  </Button>
+                </Link>
               </CardFooter>
             </Card>
           ))}
@@ -187,4 +201,3 @@ export default function MyBooksPage() {
     </div>
   );
 }
-
