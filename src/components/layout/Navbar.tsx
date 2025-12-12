@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -12,22 +13,100 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BookOpen, User, LogOut, LayoutDashboard, ShoppingBag, List, Library, Package, Heart } from "lucide-react";
+import { BookOpen, User, LogOut, LayoutDashboard, ShoppingBag, List, Library, Package, Heart, Menu } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 export function Navbar() {
   const { user, logout } = useAuth();
+  const [isOpen, setIsOpen] = React.useState(false);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center max-w-7xl">
-        <div className="mr-4 hidden md:flex">
+        <div className="mr-4 flex items-center gap-2">
+          {/* Mobile Menu */}
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[240px] sm:w-[300px]">
+              <SheetHeader>
+                <SheetTitle className="text-left">Navigation</SheetTitle>
+              </SheetHeader>
+              <div className="flex flex-col gap-4 py-4">
+                <Link
+                  href="/books"
+                  className="text-sm font-medium transition-colors hover:text-primary"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Browse Books
+                </Link>
+                {user?.role === 'user' && (
+                  <>
+                    <Link
+                      href="/my-books"
+                      className="text-sm font-medium transition-colors hover:text-primary"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      My Books
+                    </Link>
+                    <Link
+                      href="/favorites"
+                      className="text-sm font-medium transition-colors hover:text-primary"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      My Favorites
+                    </Link>
+                    <Link
+                      href="/my-transactions"
+                      className="text-sm font-medium transition-colors hover:text-primary"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Requests
+                    </Link>
+                    <Link
+                      href="/profile"
+                      className="text-sm font-medium transition-colors hover:text-primary"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Profile
+                    </Link>
+                  </>
+                )}
+                <Link
+                  href="/about"
+                  className="text-sm font-medium transition-colors hover:text-primary"
+                  onClick={() => setIsOpen(false)}
+                >
+                  About
+                </Link>
+                <Link
+                  href="/contact"
+                  className="text-sm font-medium transition-colors hover:text-primary"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Contact
+                </Link>
+              </div>
+            </SheetContent>
+          </Sheet>
+
           <Link href="/" className="mr-6 flex items-center space-x-2">
             <BookOpen className="h-6 w-6" />
             <span className="hidden font-bold sm:inline-block">
               Book Locator
             </span>
           </Link>
-          <nav className="flex items-center space-x-6 text-sm font-medium">
+          <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
               <Link
                 href="/books"
                 className="transition-colors hover:text-foreground/80 text-foreground/60"
