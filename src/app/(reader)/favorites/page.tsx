@@ -76,7 +76,7 @@ export default function MyFavoritesPage() {
   };
 
   return (
-    <div className="container py-8 px-4">
+    <div className="container max-w-7xl py-8">
       <div className="flex justify-between items-center mb-8">
         <div className="flex items-center gap-3">
           <Heart className="h-8 w-8 text-destructive fill-destructive" />

@@ -21,7 +21,7 @@ import { bookService, transactionService, reviewService } from "@/services";
 import { useAuth } from "@/contexts/AuthContext";
 import { calculateDistance, formatDistance } from "@/lib/location";
 import { toast } from "sonner";
-import { LoginModal } from "@/components/auth/LoginModal";
+import Link from "next/link";
 import { ReviewList } from "@/components/reviews/ReviewList";
 import { ReviewForm } from "@/components/reviews/ReviewForm";
 import { OwnerProfile } from "@/components/books/OwnerProfile";
@@ -432,11 +432,9 @@ export default function BookDetailsPage() {
                       </Button>
                     )
                   ) : (
-                    <LoginModal id="book-details-login-modal">
-                      <Button size="lg" className="w-full md:w-auto text-lg px-8">
-                        Login to Request
-                      </Button>
-                    </LoginModal>
+                    <Button size="lg" className="w-full md:w-auto text-lg px-8" asChild>
+                      <Link href="/auth/login">Login to Request</Link>
+                    </Button>
                   )}
                 </div>
               </div>
@@ -460,11 +458,9 @@ export default function BookDetailsPage() {
                     isSubmitting={isSubmittingReview}
                   />
                 ) : (
-                  <LoginModal id="review-login-modal">
-                    <Button className="w-full bg-success hover:bg-success/90">
-                      Login to Write a Review
-                    </Button>
-                  </LoginModal>
+                  <Button className="w-full bg-success hover:bg-success/90" asChild>
+                    <Link href="/auth/login">Login to Write a Review</Link>
+                  </Button>
                 )}
               </div>
             </div>

@@ -15,7 +15,6 @@ import { Badge } from "@/components/ui/badge";
 import { bookService } from "@/services";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { LoginModal } from "@/components/auth/LoginModal";
 
 export default function MyBooksPage() {
   const { user, token } = useAuth();
@@ -58,9 +57,9 @@ export default function MyBooksPage() {
     return (
       <div className="container py-20 text-center">
         <h2 className="text-2xl font-bold mb-4">Please login to view your books</h2>
-        <LoginModal id="my-books-login-modal">
-          <Button>Login Now</Button>
-        </LoginModal>
+        <Button asChild>
+          <Link href="/auth/login">Login Now</Link>
+        </Button>
       </div>
     );
   }
@@ -84,7 +83,7 @@ export default function MyBooksPage() {
   };
 
   return (
-    <div className="container py-8 px-4">
+    <div className="container max-w-7xl py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold tracking-tight">My Books</h1>
         <Link href="/books/create">

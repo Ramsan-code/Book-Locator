@@ -92,7 +92,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted/50 via-background to-muted">
-      <div className="container mx-auto p-8">
+      <div className="container max-w-7xl py-10">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold tracking-tight mb-2">Admin Dashboard</h1>

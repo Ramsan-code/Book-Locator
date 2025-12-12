@@ -187,7 +187,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-20 text-center">
+      <section className="container max-w-7xl py-20 text-center">
         <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight">Find your Next Great Read</h1>
         <p className="text-muted-foreground text-lg mb-10 max-w-2xl mx-auto">
           Search for books by title, author, or genre from sellers near you
@@ -205,7 +205,7 @@ export default function Home() {
 
       {/* Featured Listings */}
       {!searchQuery && (
-        <section id="search-results" className="container mx-auto px-4 py-12">
+        <section id="search-results" className="container max-w-7xl py-12">
           <div className="text-center mb-12">
             <h2 className="text-2xl font-bold mb-2">Featured Listings</h2>
             <p className="text-muted-foreground text-sm">Selling and finding books is simple, secure, and sustainable</p>
@@ -224,7 +224,7 @@ export default function Home() {
 
       {/* Owner Stats (if available) */}
       {!searchQuery && ownerStats && (
-        <section className="container mx-auto px-4 py-12 bg-muted/20 rounded-lg">
+        <section className="container max-w-7xl py-12 bg-muted/20 rounded-lg">
           <h2 className="text-2xl font-bold mb-4 text-center">Owner Rating</h2>
           <div className="flex items-center justify-center gap-4">
             <RatingDisplay rating={ownerStats.averageRating} showValue={true} size="lg" />
@@ -235,7 +235,7 @@ export default function Home() {
 
       {/* Browse by Category */}
       {!searchQuery && (
-        <section className="container mx-auto px-4 py-16 bg-muted/50">
+        <section className="container max-w-7xl py-16 bg-muted/50">
           <div className="text-center mb-12">
             <h2 className="text-2xl font-bold mb-2">Browse by Category</h2>
             <p className="text-muted-foreground text-sm">Explore our wide range of book categories</p>
@@ -260,7 +260,7 @@ export default function Home() {
 
       {/* New Arrivals */}
       {!searchQuery && (
-        <section className="container mx-auto px-4 py-12">
+        <section className="container max-w-7xl py-12">
           <div className="flex justify-between items-end mb-8">
             <div>
               <h2 className="text-2xl font-bold mb-2">New Arrivals</h2>
@@ -284,7 +284,7 @@ export default function Home() {
 
       {/* How It Works */}
       {!searchQuery && (
-        <section className="container mx-auto px-4 py-20 bg-muted/50">
+        <section className="container max-w-7xl py-20 bg-muted/50">
           <div className="text-center mb-16">
             <h2 className="text-2xl font-bold mb-2">How It Works</h2>
             <p className="text-muted-foreground text-sm">Listing and finding books is simple, secure, and sustainable</p>
@@ -307,7 +307,7 @@ export default function Home() {
       )}
 
       {/* All Books / Search Results */}
-      <section id={searchQuery ? "search-results" : "all-books"} className="container mx-auto px-4 py-12">
+      <section id={searchQuery ? "search-results" : "all-books"} className="container max-w-7xl py-12">
         <div className="flex justify-between items-end mb-8">
           <div>
             <h2 className="text-2xl font-bold mb-2">{searchQuery ? "Search Results" : "All Books"}</h2>
@@ -357,7 +357,7 @@ export default function Home() {
 
       {/* Platform Testimonials - What Our Reviews */}
       {!searchQuery && (
-        <section className="container mx-auto px-4 py-20 bg-background">
+        <section className="container max-w-7xl py-20 bg-background">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-2">What Our Reviews</h2>
             <p className="text-muted-foreground text-sm">Hear from our Most Popular Book Readers</p>
@@ -407,7 +407,7 @@ export default function Home() {
 
       {/* Book Reviews (for first featured book) */}
       {!searchQuery && bookReviews.length > 0 && (
-        <section className="container mx-auto px-4 py-20 bg-muted/30">
+        <section className="container max-w-7xl py-20 bg-muted/30">
           <div className="text-center mb-16">
             <h2 className="text-2xl font-bold mb-2">Recent Reviews</h2>
             <p className="text-muted-foreground text-sm">What readers are saying about this book</p>
@@ -436,7 +436,7 @@ export default function Home() {
 
       {/* Values */}
       {!searchQuery && (
-        <section className="container mx-auto px-4 py-20">
+        <section className="container max-w-7xl py-20">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             {[{ icon: Gem, title: "Great Value", desc: "Find affordable books from local sellers" },
               { icon: Leaf, title: "Sustainable Choice", desc: "Give pre-loved books a new home" },

@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { bookService, reviewService } from "@/services";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { useAuth } from "@/contexts/AuthContext";
-import { LoginModal } from "@/components/auth/LoginModal";
+import Link from "next/link";
 
 // Mock owner data
 const MOCK_OWNERS: Record<string, any> = {
@@ -153,9 +153,9 @@ export default function OwnerProfilePage() {
       <div className="container py-8 flex flex-col items-center justify-center min-h-[50vh]">
         <h1 className="text-2xl font-bold mb-4">Login Required</h1>
         <p className="text-muted-foreground mb-6">Please log in to view this profile.</p>
-        <LoginModal>
-          <Button>Sign In</Button>
-        </LoginModal>
+        <Button asChild>
+          <Link href="/auth/login">Sign In</Link>
+        </Button>
       </div>
     );
   }

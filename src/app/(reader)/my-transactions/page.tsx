@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { transactionService } from "@/services";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { LoginModal } from "@/components/auth/LoginModal";
+import Link from "next/link";
 import { Loader2, Check, X, User, Mail, Phone, MapPin, Info, CreditCard, Clock } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { CommissionPayment } from "@/components/payments/CommissionPayment";
@@ -111,9 +111,9 @@ export default function TransactionsPage() {
     return (
       <div className="container py-20 text-center">
         <h2 className="text-2xl font-bold mb-4">Please login to view transactions</h2>
-        <LoginModal id="transactions-login-modal">
-          <Button>Login Now</Button>
-        </LoginModal>
+        <Button asChild>
+          <Link href="/auth/login">Login Now</Link>
+        </Button>
       </div>
     );
   }
@@ -156,7 +156,7 @@ export default function TransactionsPage() {
   };
 
   return (
-    <div className="container py-8 px-4">
+    <div className="container max-w-7xl py-8">
       <h1 className="text-3xl font-bold tracking-tight mb-8">Transactions</h1>
 
       <Tabs defaultValue="my-requests" className="w-full">

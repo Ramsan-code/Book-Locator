@@ -38,7 +38,21 @@ export default function ProfilePage() {
   const router = useRouter();
   const [isUploading, setIsUploading] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
-  const [stats, setStats] = React.useState({ averageRating: 4.5, reviewCount: 28 });
+  const [stats, setStats] = React.useState<{
+    averageRating: number;
+    reviewCount: number;
+    breakdown: { stars: number; percentage: number; count: number }[];
+  }>({ 
+    averageRating: 0, 
+    reviewCount: 0,
+    breakdown: [
+      { stars: 5, percentage: 0, count: 0 },
+      { stars: 4, percentage: 0, count: 0 },
+      { stars: 3, percentage: 0, count: 0 },
+      { stars: 2, percentage: 0, count: 0 },
+      { stars: 1, percentage: 0, count: 0 },
+    ]
+  });
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Form state
@@ -60,15 +74,6 @@ export default function ProfilePage() {
   const [deleteConfirmation, setDeleteConfirmation] = React.useState("");
   const [isDeletingAccount, setIsDeletingAccount] = React.useState(false);
 
-  // Rating breakdown (mock data)
-  const ratingBreakdown = [
-    { stars: 5, percentage: 75, count: 21 },
-    { stars: 4, percentage: 15, count: 4 },
-    { stars: 3, percentage: 7, count: 2 },
-    { stars: 2, percentage: 3, count: 1 },
-    { stars: 1, percentage: 0, count: 0 },
-  ];
-
   // Initialize form state after mount to avoid hydration errors
   React.useEffect(() => {
     setMounted(true);
@@ -86,10 +91,17 @@ export default function ProfilePage() {
             setStats({
               averageRating: ownerStats.averageRating,
               reviewCount: ownerStats.reviewCount,
+              breakdown: ownerStats.breakdown || [
+                { stars: 5, percentage: 0, count: 0 },
+                { stars: 4, percentage: 0, count: 0 },
+                { stars: 3, percentage: 0, count: 0 },
+                { stars: 2, percentage: 0, count: 0 },
+                { stars: 1, percentage: 0, count: 0 },
+              ]
             });
           }
         } catch (error) {
-          console.log("Using mock stats");
+          console.log("Using default stats");
         }
       };
       fetchStats();
@@ -220,7 +232,7 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container max-w-5xl py-8 px-4">
+      <div className="container max-w-7xl py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -342,7 +354,7 @@ export default function ProfilePage() {
 
               {/* Rating Breakdown */}
               <div className="space-y-3">
-                {ratingBreakdown.map((rating) => (
+                {stats.breakdown.map((rating) => (
                   <div key={rating.stars} className="flex items-center gap-3">
                     <span className="text-sm w-4">{rating.stars}</span>
                     <Star className="h-4 w-4 fill-primary text-primary" />
