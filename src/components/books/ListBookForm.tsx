@@ -14,7 +14,6 @@ import { Progress } from "@/components/ui/progress";
 import { bookService } from "@/services";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { LoginModal } from "@/components/auth/LoginModal";
 
 const CATEGORIES = [
   "Fiction",
@@ -327,7 +326,7 @@ export function ListBookForm() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/80 py-8">
-      <div className="container max-w-4xl px-4">
+      <div className="container max-w-7xl">
         {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold tracking-tight mb-2">List Your Book</h1>
