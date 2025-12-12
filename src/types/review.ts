@@ -32,4 +32,5 @@ export interface OwnerStatsResponse {
   success: boolean;
   averageRating: number;
   reviewCount: number;
+  breakdown?: { stars: number; percentage: number; count: number }[];
 }

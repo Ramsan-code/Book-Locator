@@ -41,6 +41,7 @@ export const reviewService = {
       // Fetch reviews for all owner's books
       let totalRating = 0;
       let totalReviews = 0;
+      const starCounts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
 
       for (const book of ownerBooks) {
         try {
@@ -48,10 +49,14 @@ export const reviewService = {
           if (reviewsResponse.success && reviewsResponse.reviews) {
             const bookReviews = reviewsResponse.reviews;
             totalReviews += bookReviews.length;
-            totalRating += bookReviews.reduce(
-              (sum: number, review: any) => sum + review.rating,
-              0
-            );
+            
+            bookReviews.forEach((review: any) => {
+              totalRating += review.rating;
+              const rating = Math.round(review.rating);
+              if (rating >= 1 && rating <= 5) {
+                starCounts[rating as keyof typeof starCounts]++;
+              }
+            });
           }
         } catch {
           // Skip if reviews fetch fails for a book
@@ -60,14 +65,33 @@ export const reviewService = {
       }
 
       const averageRating = totalReviews > 0 ? totalRating / totalReviews : 0;
+      
+      // Calculate breakdown
+      const breakdown = [5, 4, 3, 2, 1].map(stars => {
+        const count = starCounts[stars as keyof typeof starCounts];
+        const percentage = totalReviews > 0 ? Math.round((count / totalReviews) * 100) : 0;
+        return { stars, percentage, count };
+      });
 
       return {
         success: true,
         averageRating: Math.round(averageRating * 10) / 10,
         reviewCount: totalReviews,
+        breakdown
       };
     } catch {
-      return { success: false, averageRating: 0, reviewCount: 0 };
+      return { 
+        success: false, 
+        averageRating: 0, 
+        reviewCount: 0,
+        breakdown: [
+          { stars: 5, percentage: 0, count: 0 },
+          { stars: 4, percentage: 0, count: 0 },
+          { stars: 3, percentage: 0, count: 0 },
+          { stars: 2, percentage: 0, count: 0 },
+          { stars: 1, percentage: 0, count: 0 },
+        ]
+      };
     }
   },
 };
