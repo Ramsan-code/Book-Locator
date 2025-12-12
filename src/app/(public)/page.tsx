@@ -447,8 +447,16 @@ export default function Home() {
                 
                 {/* Reviewer Info */}
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-                    <User className="h-4 w-4 text-muted-foreground" />
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
+                    {rev.reviewer?.image ? (
+                      <img 
+                        src={rev.reviewer.image} 
+                        alt={rev.reviewer.name || 'Reviewer'} 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <User className="h-4 w-4 text-muted-foreground" />
+                    )}
                   </div>
                   <div>
                     <h5 className="font-medium text-sm">{rev.reviewer?.name || "Anonymous"}</h5>

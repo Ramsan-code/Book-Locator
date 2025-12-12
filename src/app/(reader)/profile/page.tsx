@@ -121,11 +121,21 @@ export default function ProfilePage() {
 
     setIsUploading(true);
     try {
+      const token = localStorage.getItem("booklink_token") || "";
+      
       // Use bookService.uploadImage as a generic upload handler since it hits /api/upload
-      const res = await bookService.uploadImage(localStorage.getItem("booklink_token") || "", file);
+      const res = await bookService.uploadImage(token, file);
       if (res.image) {
+        // Update local state
         setImage(res.image);
-        toast.success("Image uploaded successfully");
+        
+        // Save the image to profile in database
+        const updateRes = await profileService.updateProfile(token, { image: res.image });
+        if (updateRes.success) {
+          toast.success("Profile picture updated successfully!");
+        } else {
+          toast.success("Image uploaded - please save to apply changes");
+        }
       }
     } catch (error) {
       console.error("Upload failed:", error);
@@ -139,9 +149,22 @@ export default function ProfilePage() {
     }
   };
 
-  const handleRemoveImage = () => {
-    setImage("");
-    toast.success("Image removed. Click Save Changes to apply.");
+  const handleRemoveImage = async () => {
+    try {
+      const token = localStorage.getItem("booklink_token") || "";
+      setImage("");
+      
+      // Save the removal to database
+      const updateRes = await profileService.updateProfile(token, { image: "" });
+      if (updateRes.success) {
+        toast.success("Profile picture removed!");
+      } else {
+        toast.error("Failed to remove picture");
+      }
+    } catch (error) {
+      console.error("Remove image failed:", error);
+      toast.error("Failed to remove picture");
+    }
   };
 
 
