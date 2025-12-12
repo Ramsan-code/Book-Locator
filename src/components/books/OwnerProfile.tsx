@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
-import { LoginModal } from "@/components/auth/LoginModal";
+import Link from "next/link";
 
 interface OwnerProfileProps {
   owner: {
@@ -76,11 +76,9 @@ export function OwnerProfile({
             View Profile
           </Button>
         ) : (
-          <LoginModal>
-            <Button variant="outline">
-              View Profile
-            </Button>
-          </LoginModal>
+          <Button variant="outline" asChild>
+            <Link href="/auth/login">View Profile</Link>
+          </Button>
         )}
       </div>
     </Card>
