@@ -57,7 +57,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
   return (
     <div className="space-y-6">
       <form id="form-login" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FieldGroup className="space-y-5">
+        <FieldGroup className="space-y-3">
           <Controller
             name="email"
             control={form.control}

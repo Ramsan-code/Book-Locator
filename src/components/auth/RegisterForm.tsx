@@ -89,7 +89,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-      <FieldGroup className="space-y-4">
+      <FieldGroup className="space-y-3">
         <Controller
           name="name"
           control={form.control}
