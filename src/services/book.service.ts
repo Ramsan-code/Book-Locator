@@ -3,7 +3,7 @@
 import apiClient from "@/lib/apiClient";
 import { Book, BooksResponse, BookResponse, CreateBookData, UpdateBookData } from "@/types/book";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ;
+const API_BASE_URL = "";
 
 export const bookService = {
   async getAll(params?: string): Promise<BooksResponse> {

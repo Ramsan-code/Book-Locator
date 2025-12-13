@@ -41,6 +41,7 @@ const CONDITIONS = [
 ];
 
 export function ListBookForm() {
+  // Trigger HMR update
   const router = useRouter();
   const { user, token } = useAuth();
   const [currentStep, setCurrentStep] = React.useState(1);
@@ -231,7 +232,7 @@ export function ListBookForm() {
     if (step === 3) {
       if (!formData.address.trim()) newErrors.address = "Address is required";
       if (!formData.latitude || !formData.longitude) {
-        newErrors.address = "Please provide location coordinates (use Google Maps URL, manual entry, or current location)";
+        newErrors.address = "Please provide location coordinates (use Google Maps URL or current location)";
       }
     }
 
@@ -288,6 +289,7 @@ export function ListBookForm() {
           type: "Point",
           coordinates: [parseFloat(formData.longitude), parseFloat(formData.latitude)],
         },
+        address: formData.address,
         owner: user._id,
         image: formData.image,
       };
@@ -575,52 +577,17 @@ export function ListBookForm() {
                 <div>
                   <h2 className="text-2xl font-bold mb-1">Location</h2>
                   <p className="text-sm text-muted-foreground">
-                    Add pickup location
+                    Add pickup location details
                   </p>
                 </div>
 
-                <div className="space-y-4">
-                  {/* Google Maps URL Input */}
-                  <Card className="bg-info/10 border-info/20">
-                    <CardContent className="p-4">
-                      <div className="space-y-3">
-                        <div className="flex items-start gap-3">
-                          <div className="bg-info rounded-full p-2">
-                            <Link2 className="h-4 w-4 text-white" />
-                          </div>
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-sm mb-1">Paste Google Maps Link</h4>
-                            <p className="text-xs text-muted-foreground mb-2">
-                              Open Google Maps, find your location, copy the URL and paste it here
-                            </p>
-                            <Input
-                              placeholder="https://www.google.com/maps/@12.9716,77.5946,15z"
-                              onChange={(e) => {
-                                const url = e.target.value;
-                                if (url.includes('google.com/maps') || url.includes('maps.google.com')) {
-                                  handleMapUrlPaste(url);
-                                }
-                              }}
-                              className="text-sm"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <div className="flex items-center gap-2">
-                    <div className="h-px flex-1 bg-border" />
-                    <span className="text-xs text-muted-foreground">OR</span>
-                    <div className="h-px flex-1 bg-border" />
-                  </div>
-
-                  {/* Manual Location Entry */}
+                <div className="space-y-6">
+                  {/* Address Input - Now First */}
                   <div>
-                    <Label htmlFor="address">Pickup Address *</Label>
+                    <Label htmlFor="address">Pick Up Address *</Label>
                     <Input
                       id="address"
-                      placeholder="Enter your full address"
+                      placeholder="Enter full address (e.g., 123 Main St, City)"
                       value={formData.address}
                       onChange={(e) => handleChange("address", e.target.value)}
                       className={errors.address ? "border-destructive" : ""}
@@ -628,42 +595,58 @@ export function ListBookForm() {
                     {errors.address && <p className="text-sm text-destructive mt-1">{errors.address}</p>}
                   </div>
 
-                  {/* Coordinates */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="latitude">Latitude</Label>
-                      <Input
-                        id="latitude"
-                        type="number"
-                        step="any"
-                        placeholder="e.g., 12.9716"
-                        value={formData.latitude}
-                        onChange={(e) => handleChange("latitude", e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="longitude">Longitude</Label>
-                      <Input
-                        id="longitude"
-                        type="number"
-                        step="any"
-                        placeholder="e.g., 77.5946"
-                        value={formData.longitude}
-                        onChange={(e) => handleChange("longitude", e.target.value)}
-                      />
-                    </div>
-                  </div>
+                  <div className="space-y-4">
+                    <Label>Pin Exact Location *</Label>
+                    <p className="text-xs text-muted-foreground -mt-3 mb-2">
+                       We need your exact coordinates for the map. Use one of the methods below:
+                    </p>
 
-                  {/* Get Current Location Button */}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={getCurrentLocation}
-                    className="w-full"
-                  >
-                    <MapPin className="h-4 w-4 mr-2" />
-                    Use My Current Location
-                  </Button>
+                    {/* Get Current Location Button */}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={getCurrentLocation}
+                      className="w-full"
+                    >
+                      <MapPin className="h-4 w-4 mr-2" />
+                      Use My Current Location
+                    </Button>
+
+                    <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t" />
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-background px-2 text-muted-foreground">Map link</span>
+                        </div>
+                    </div>
+
+                    {/* Google Maps URL Input */}
+                    <Card className="bg-muted/50 border-dashed">
+                      <CardContent className="p-4">
+                        <div className="space-y-3">
+                          <div className="flex items-start gap-3">
+                            <div className="bg-primary/10 rounded-full p-2">
+                              <Link2 className="h-4 w-4 text-primary" />
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-sm mb-1">Paste Google Maps Link</h4>
+                              <Input
+                                placeholder="https://maps.google.com/..."
+                                onChange={(e) => {
+                                  const url = e.target.value;
+                                  if (url.includes('google.com/maps') || url.includes('maps.google.com')) {
+                                    handleMapUrlPaste(url);
+                                  }
+                                }}
+                                className="text-sm"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
 
                   {/* Location Preview */}
                   {formData.latitude && formData.longitude && (
@@ -674,9 +657,9 @@ export function ListBookForm() {
                             <Check className="h-4 w-4 text-white" />
                           </div>
                           <div>
-                            <h4 className="font-semibold text-sm mb-1">Location Set</h4>
+                            <h4 className="font-semibold text-sm mb-1">Location Pinned!</h4>
                             <p className="text-xs text-muted-foreground">
-                              Coordinates: {parseFloat(formData.latitude).toFixed(4)}, {parseFloat(formData.longitude).toFixed(4)}
+                              Coordinates ready.
                             </p>
                             <a
                               href={`https://www.google.com/maps/@${formData.latitude},${formData.longitude},15z`}
@@ -691,10 +674,8 @@ export function ListBookForm() {
                       </CardContent>
                     </Card>
                   )}
-
-                  </div>
                 </div>
-
+              </div>
             )}
 
             {/* Navigation Buttons */}

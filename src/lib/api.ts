@@ -2,7 +2,7 @@
 
 import { AuthResponse, LoginCredentials, RegisterData } from "@/types/auth";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ;
+const API_BASE_URL = "";
 
 // ----------------------
 // Custom Error Class

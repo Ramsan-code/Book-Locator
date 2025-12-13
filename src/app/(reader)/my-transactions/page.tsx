@@ -178,7 +178,9 @@ export default function TransactionsPage() {
                 <div className="text-center py-8 text-muted-foreground">No requests found.</div>
               ) : (
                 <div className="space-y-4">
-                  {myRequests.map((req) => (
+                  {myRequests.map((req) => {
+                    console.log('Transaction:', req._id, 'Book:', req.book);
+                    return (
                     <div key={req._id} className="flex flex-col sm:flex-row justify-between items-start p-4 border rounded-lg gap-4">
                       <div className="flex-1">
                         <h4 className="font-semibold">{req.book?.title || "Unknown Book"}</h4>
@@ -220,6 +222,15 @@ export default function TransactionsPage() {
                                   <Phone className="h-3 w-3" /> {req.seller?.phone_no}
                                 </div>
                               )}
+                              {(req.book?.address || req.book?.city) && (
+                                <div className="flex items-start gap-2 mt-1 pt-1 border-t border-success/20">
+                                  <MapPin className="h-3 w-3 mt-0.5" />
+                                  <div className="flex flex-col">
+                                    {req.book?.address && <span>{req.book.address}</span>}
+                                    {req.book?.city && <span className="text-xs opacity-80">{req.book.city}</span>}
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
                         )}
@@ -237,7 +248,8 @@ export default function TransactionsPage() {
                         )}
                       </div>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </CardContent>
