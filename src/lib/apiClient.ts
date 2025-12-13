@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 
 // Create axios instance with default config
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_URL, // Use relative path to leverage Next.js rewrites
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",

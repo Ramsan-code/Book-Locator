@@ -1,8 +1,13 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+
 export function useFavorites() {
   const [favorites, setFavorites] = useState<string[]>([]);
+  const router = useRouter();
+  const { user } = useAuth();
 
   useEffect(() => {
     const storedFavorites = JSON.parse(localStorage.getItem("book-locator-favorites") || "[]");
@@ -17,6 +22,12 @@ export function useFavorites() {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
+    }
+
+    if (!user) {
+      toast.error("Please login to add favorites");
+      router.push("/auth/login");
+      return;
     }
 
     const newFavorites = [...favorites];

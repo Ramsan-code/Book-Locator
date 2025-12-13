@@ -52,7 +52,7 @@ export const bookService = {
     const formData = new FormData();
     formData.append("image", file);
 
-    const response = await fetch(`/api/upload`, {
+    const response = await fetch(`${API_BASE_URL}/api/upload`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
