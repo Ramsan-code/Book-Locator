@@ -534,7 +534,7 @@ export function ListBookForm() {
 
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="price">Sale Price (Rs.) *</Label>
+                    <Label htmlFor="price">Sale Price (LKR) *</Label>
                     <Input
                       id="price"
                       type="number"
