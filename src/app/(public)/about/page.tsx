@@ -20,10 +20,10 @@ export default function AboutPage() {
       {/* Stats Section */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16">
         {[
-          { icon: BookOpen, label: "Books Listed", value: "10,000+" },
-          { icon: Users, label: "Active Readers", value: "5,000+" },
-          { icon: Globe, label: "Cities Covered", value: "50+" },
-          { icon: Award, label: "Happy Exchanges", value: "25,000+" },
+          { icon: BookOpen, label: "Books Listed", value: "10+" },
+          { icon: Users, label: "Active Readers", value: "5+" },
+          { icon: Globe, label: "Cities Covered", value: "5+" },
+          { icon: Award, label: "Happy Exchanges", value: "2+" },
         ].map((stat, index) => (
           <Card
             key={index}
@@ -77,16 +77,16 @@ export default function AboutPage() {
                 "https://res.cloudinary.com/duopmqsxf/image/upload/v1765597664/book-locator/vhjbzfhewjlaqsu6bjzr.jpg",
             },
             {
-              name: "Michael Chen",
+              name: "Sujeethan",
               role: "Head of Technology",
               image:
-                "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop",
+                "https://res.cloudinary.com/duopmqsxf/image/upload/v1765597664/book-locator/m6bwnxcomhqpbvlhifch.jpg",
             },
             {
-              name: "Emily Davis",
+              name: "Kiruthuja",
               role: "Community Manager",
               image:
-                "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=400&auto=format&fit=crop",
+                "https://res.cloudinary.com/duopmqsxf/image/upload/v1765597664/book-locator/zisa5dzv2os2he2jxgde.jpg",
             },
           ].map((member, index) => (
             <div key={index} className="text-center group">

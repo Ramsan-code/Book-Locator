@@ -210,7 +210,7 @@ export default function Home() {
         <div className="max-w-xl mx-auto relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input 
-            placeholder="Search by title, author, or ISBN" 
+            placeholder="Search by title, author" 
             className="pl-10 h-12 text-base" 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -380,22 +380,22 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {[
               {
-                name: "Sarah K.",
-                role: "Book Reader",
+                name: "Jayanthiran.",
+                role: "Uki Technology School Lecturer",
                 rating: 5,
                 review: "I've found so many gems on BookLocator that I couldn't find anywhere else. The process is incredibly simple, and I love connecting with fellow readers."
               },
               {
-                name: "Sarah K.",
-                role: "Book Reader",
-                rating: 5,
-                review: "I've found so many gems on BookLocator that I couldn't find anywhere else. The process is incredibly simple, and I love connecting with fellow readers."
+                name: "Kayuran",
+                role: "Book Reader & Uki Technology School Lecturer",
+                rating: 4,
+                review: "I Think This Platform is Service Base like Medium App"
               },
               {
-                name: "Sarah K.",
-                role: "Book Reader",
-                rating: 5,
-                review: "I've found so many gems on BookLocator that I couldn't find anywhere else. The process is incredibly simple, and I love connecting with fellow readers."
+                name: "Lajeeban",
+                role: "Book Reader & Uki Technology School Old Student",
+                rating: 3,
+                review:"Nice Platform Hyber Local Possible But Not Globally"
               }
             ].map((testimonial, i) => (
               <Card key={i} className="p-6 hover:shadow-lg transition-shadow">
