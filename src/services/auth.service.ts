@@ -20,6 +20,8 @@ export const authService = {
         role: reader.role,
         isApproved: reader.isApproved,
         image: reader.image,
+        phone_no: reader.phone_no,
+        city: reader.city,
       },
     };
   },
