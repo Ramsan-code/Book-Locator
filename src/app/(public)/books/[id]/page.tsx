@@ -331,9 +331,11 @@ export default function BookDetailsPage() {
                         </div>
                       </DialogContent>
                     </Dialog>
-                    <Button variant="outline" size="icon" onClick={(e) => toggleFavorite(params.id as string, e)}>
-                      <Heart className={`h-4 w-4 ${isFavorite(params.id as string) ? "fill-destructive text-destructive" : ""}`} />
-                    </Button>
+                    {user && (
+                      <Button variant="outline" size="icon" onClick={(e) => toggleFavorite(params.id as string, e)}>
+                        <Heart className={`h-4 w-4 ${isFavorite(params.id as string) ? "fill-destructive text-destructive" : ""}`} />
+                      </Button>
+                    )}
                   </div>
                 </div>
 
@@ -347,16 +349,20 @@ export default function BookDetailsPage() {
                       Sold
                     </Badge>
                   )}
-                  <Badge variant="outline" className="text-sm px-3 py-1">
-                    {book.condition === "New" ? "Like New" : book.condition}
-                  </Badge>
-                  <Badge variant="secondary" className="text-sm px-3 py-1">
-                    {book.category}
-                  </Badge>
+                  {user && (
+                    <>
+                      <Badge variant="outline" className="text-sm px-3 py-1">
+                        {book.condition === "New" ? "Like New" : book.condition}
+                      </Badge>
+                      <Badge variant="secondary" className="text-sm px-3 py-1">
+                        {book.category}
+                      </Badge>
+                    </>
+                  )}
                 </div>
 
                 {/* Distance Badge */}
-                {distance !== null && (
+                {distance !== null && user && (
                   <div className="mb-6">
                     <Badge variant="outline" className="text-base px-4 py-2">
                       <MapPin className="h-4 w-4 mr-2" />
@@ -366,11 +372,18 @@ export default function BookDetailsPage() {
                 )}
 
                 <div className="text-3xl font-bold mb-8">
-                  ${book.price}
+                  {user ? (
+                    `LKR ${book.price}`
+                  ) : (
+                    <span className="text-xl text-muted-foreground font-normal flex items-center">
+                      <MapPin className="h-5 w-5 mr-2" />
+                      {book.owner?.city || "District Only"}
+                    </span>
+                  )}
                 </div>
 
-                {/* Owner Profile Section - Only show if user is NOT the owner */}
-                {book.owner && user?._id !== book.owner._id && (
+                {/* Owner Profile Section - Only show if user is NOT the owner AND is logged in */}
+                {book.owner && user && user._id !== book.owner._id && (
                   <div className="mb-6">
                     <h3 className="text-sm font-semibold mb-3">Owner</h3>
                     <OwnerProfile

@@ -17,6 +17,7 @@ import {
   Star,
   Leaf,
   Gem,
+  Heart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,10 +33,12 @@ import { bookService, adminService, reviewService } from "@/services";
 import { useAuth } from "@/contexts/AuthContext";
 import { getCurrentLocation, sortByDistance, formatDistance } from "@/lib/location";
 import { RatingDisplay } from "@/components/reviews/RatingDisplay";
+import { useFavorites } from "@/hooks/useFavorites";
 
 export default function Home() {
   const router = useRouter();
   const { user } = useAuth();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const [searchQuery, setSearchQuery] = React.useState("");
   const [featuredBooks, setFeaturedBooks] = React.useState<any[]>([]);
   const [newArrivals, setNewArrivals] = React.useState<any[]>([]);
@@ -162,20 +165,27 @@ export default function Home() {
               <BookOpen className="h-12 w-12" />
             </div>
           )}
-          {book.distance !== undefined && (
-            <Badge className="absolute top-2 right-2">
-              <MapPin className="h-3 w-3 mr-1" />
-              {formatDistance(book.distance)}
-            </Badge>
+          {user && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-2 left-2 bg-background/80 hover:bg-background/90 rounded-full h-8 w-8 z-10"
+              onClick={(e) => toggleFavorite(book._id, e)}
+            >
+              <Heart className={`h-4 w-4 ${isFavorite(book._id) ? "fill-destructive text-destructive" : ""}`} />
+            </Button>
           )}
+          {/* Distance hidden on home page for consistency */}
         </div>
         <CardHeader className="p-4">
           <CardTitle className="line-clamp-1 text-lg font-medium">{book.title}</CardTitle>
           <p className="text-sm text-muted-foreground">{book.author}</p>
         </CardHeader>
         <CardFooter className="p-4 pt-0 flex justify-between items-center">
-          <span className="font-bold text-lg text-primary">Rs. {book.price}</span>
-          <Badge variant="outline">{book.category}</Badge>
+          <span className="text-sm text-muted-foreground flex items-center">
+            <MapPin className="h-3 w-3 mr-1" />
+            {book.owner?.city || "District Only"}
+          </span>
         </CardFooter>
       </Card>
     </Link>
@@ -460,7 +470,6 @@ export default function Home() {
                   </div>
                   <div>
                     <h5 className="font-medium text-sm">{rev.reviewer?.name || "Anonymous"}</h5>
-                    <p className="text-xs text-muted-foreground">{rev.reviewer?.email || ""}</p>
                   </div>
                 </div>
                 

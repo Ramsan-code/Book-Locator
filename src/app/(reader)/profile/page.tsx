@@ -60,6 +60,8 @@ export default function ProfilePage() {
   const [username, setUsername] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [phone, setPhone] = React.useState("");
+
+  const [city, setCity] = React.useState("");
   const [image, setImage] = React.useState("");
 
   // Password change dialog state
@@ -81,6 +83,8 @@ export default function ProfilePage() {
       setDisplayName(user.name || "");
       setEmail(user.email || "");
       setPhone(user.phone_no || "");
+
+      setCity(user.city || "");
       setImage(user.image || "");
       
       // Fetch user's review stats
@@ -173,7 +177,10 @@ export default function ProfilePage() {
     if (!user) return;
 
     // Only save if changes were made
-    if (email === (user.email || "") && phone === (user.phone_no || "")) {
+    console.log("Saving profile:", { email, phone, city });
+    console.log("Current user:", { email: user.email, phone: user.phone_no, city: user.city });
+    if (email === (user.email || "") && phone === (user.phone_no || "") && city === (user.city || "")) {
+      toast.info("No changes to save");
       return;
     }
 
@@ -182,6 +189,7 @@ export default function ProfilePage() {
       const updateRes = await profileService.updateProfile(token, {
         email,
         phone_no: phone,
+        city,
       });
 
       if (updateRes.success) {
@@ -439,6 +447,53 @@ export default function ProfilePage() {
             </div>
           </CardHeader>
 
+
+        </Card>
+
+        {/* Contact Info Card */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Contact Information</CardTitle>
+            <CardDescription>
+              Manage your contact details.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input
+                  id="phone"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Enter phone number"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="city">District</Label>
+                <Input
+                  id="city"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder="Enter your district"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end mt-4">
+              <Button onClick={handleSaveProfile}>
+                Save Changes
+              </Button>
+            </div>
+          </CardContent>
         </Card>
 
         {/* Danger Zone */}

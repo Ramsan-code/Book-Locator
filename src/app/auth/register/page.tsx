@@ -5,6 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { RegisterForm } from "@/components/auth/RegisterForm";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -18,8 +20,20 @@ export default function RegisterPage() {
         <div className="absolute top-[20%] left-[20%] w-[30%] h-[30%] rounded-full bg-accent/20 blur-[100px] animate-pulse delay-1000" />
       </div>
 
+      {/* Back to Home Button */}
+      <div className="absolute top-4 left-4 z-20">
+        <Button 
+          variant="ghost" 
+          onClick={() => router.push('/')}
+          className="gap-2 hover:bg-background/20"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Home
+        </Button>
+      </div>
+
       {/* Glass Card Container */}
-      <div className="relative z-10 w-full max-w-lg px-4 py-8 animate-slide-up">
+      <div className="relative z-10 w-full max-w-xl px-4 py-8 animate-slide-up">
         <div className="backdrop-blur-xl bg-card/30 border border-white/10 shadow-2xl rounded-2xl p-8 md:p-12 overflow-hidden relative">
           {/* Decorative shine effect */}
           <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />

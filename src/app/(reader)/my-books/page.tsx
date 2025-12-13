@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Plus, BookOpen, Clock, CheckCircle, Eye, XCircle, AlertTriangle, Loader2 } from "lucide-react";
+import { Plus, BookOpen, Clock, CheckCircle, Eye, XCircle, AlertTriangle, Loader2, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -172,6 +172,10 @@ export default function MyBooksPage() {
               <CardHeader className="p-4">
                 <CardTitle className="line-clamp-1 text-lg">{book.title}</CardTitle>
                 <p className="text-sm text-muted-foreground">{book.author}</p>
+                <div className="flex items-center text-xs text-muted-foreground mt-2">
+                  <MapPin className="h-3 w-3 mr-1" />
+                  {book.owner?.city || "No District"}
+                </div>
               </CardHeader>
               
               {/* Show rejection reason if book is rejected */}

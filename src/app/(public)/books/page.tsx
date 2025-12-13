@@ -110,8 +110,12 @@ function BooksContent() {
         params.append("available", "true");
         const res = await bookService.getAll(params.toString());
         
-        if (res.success && res.books && res.books.length > 0) {
-          let booksData = res.books;
+        if (res.success) {
+        console.log("Books fetched:", res.books);
+        if (res.books && res.books.length > 0) {
+          console.log("First book owner:", res.books[0].owner);
+        }
+          let booksData = res.books || [];
           
           // Sort by distance if user location is available
           if (userLocation) {
@@ -283,6 +287,7 @@ function BooksContent() {
                               No Image
                             </div>
                           )}
+                        {user && (
                           <Button
                             variant="ghost"
                             size="icon"
@@ -291,7 +296,8 @@ function BooksContent() {
                           >
                             <Heart className={`h-4 w-4 ${isFavorite(book._id) ? "fill-destructive text-destructive" : ""}`} />
                           </Button>
-                          {book.distance !== undefined && (
+                        )}
+                          {book.distance !== undefined && user && (
                             <Badge className="absolute top-2 right-2 bg-primary/90">
                               <MapPin className="h-3 w-3 mr-1" />
                               {formatDistance(book.distance)}
@@ -303,7 +309,14 @@ function BooksContent() {
                           <p className="text-sm text-muted-foreground">{book.author}</p>
                         </CardHeader>
                         <CardFooter className="p-4 pt-0">
-                          <span className="font-bold text-lg">Rs. {book.price}</span>
+                          {user ? (
+                            <span className="font-bold text-lg">LKR {book.price}</span>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">
+                              <MapPin className="h-3 w-3 inline mr-1" />
+                              {book.owner?.city || "District Only"}
+                            </span>
+                          )}
                         </CardFooter>
                       </Card>
                     </Link>
@@ -344,7 +357,17 @@ function BooksContent() {
                               No Image
                             </div>
                           )}
-                          {book.distance !== undefined && (
+                          {user && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="absolute top-2 left-2 bg-background/80 hover:bg-background/90 rounded-full h-8 w-8 z-10"
+                              onClick={(e) => toggleFavorite(book._id, e)}
+                            >
+                              <Heart className={`h-4 w-4 ${isFavorite(book._id) ? "fill-destructive text-destructive" : ""}`} />
+                            </Button>
+                          )}
+                          {book.distance !== undefined && user && (
                             <Badge className="absolute top-2 right-2 bg-primary/90">
                               <MapPin className="h-3 w-3 mr-1" />
                               {formatDistance(book.distance)}
@@ -356,7 +379,14 @@ function BooksContent() {
                           <p className="text-sm text-muted-foreground">{book.author}</p>
                         </CardHeader>
                         <CardFooter className="p-4 pt-0">
-                          <span className="font-bold text-lg">Rs. {book.price}</span>
+                          {user ? (
+                            <span className="font-bold text-lg">LKR {book.price}</span>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">
+                              <MapPin className="h-3 w-3 inline mr-1" />
+                              {book.owner?.city || "District Only"}
+                            </span>
+                          )}
                         </CardFooter>
                       </Card>
                     </Link>
@@ -439,14 +469,16 @@ function BooksContent() {
                                     {book.author}
                                   </p>
                                 </div>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8"
-                                  onClick={(e) => toggleFavorite(book._id, e)}
-                                >
-                                  <Heart className={`h-4 w-4 ${isFavorite(book._id) ? "fill-destructive text-destructive" : ""}`} />
-                                </Button>
+                                {user && (
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    onClick={(e) => toggleFavorite(book._id, e)}
+                                  >
+                                    <Heart className={`h-4 w-4 ${isFavorite(book._id) ? "fill-destructive text-destructive" : ""}`} />
+                                  </Button>
+                                )}
                               </div>
                               
                               <div className="flex flex-wrap items-center gap-3 text-sm">
@@ -455,15 +487,22 @@ function BooksContent() {
                                     {book.condition}
                                   </Badge>
                                 )}
-                                {book.distance !== undefined && (
+                                {book.distance !== undefined && user && (
                                   <span className="flex items-center gap-1 text-muted-foreground">
                                     <MapPin className="h-3 w-3" />
                                     {formatDistance(book.distance)}
                                   </span>
                                 )}
-                                <span className="font-bold text-lg text-success">
-                                  Rs. {book.price}
-                                </span>
+                                {user ? (
+                                  <span className="font-bold text-lg text-success">
+                                    LKR {book.price}
+                                  </span>
+                                ) : (
+                                  <span className="flex items-center gap-1 text-muted-foreground">
+                                    <MapPin className="h-3 w-3" />
+                                    {book.owner?.city || "District Only"}
+                                  </span>
+                                )}
                               </div>
                             </div>
                           </div>

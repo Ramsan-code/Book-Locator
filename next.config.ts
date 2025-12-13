@@ -9,6 +9,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "https://book-locator-api.vercel.app/api/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
